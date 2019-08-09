@@ -42,20 +42,23 @@
 
 #include <string.h>
 
-void
-shutdown()
+void shutdown(int update_mode)
 {
   nxt_lcd_enable(false);
-  for(;;)
-    nxt_avr_power_down();
+  for(;;) {
+    if (update_mode) {
+      nxt_avr_firmware_update_mode();
+    }
+    else {
+      nxt_avr_power_down();
+    }
+  }
 }
 
 /**
  * Wait for the user to press ESCAPE and then exit the program
  */
-static
-void
-wait_for_exit()
+static void wait_for_exit()
 {
   // wait for all buttons to be released
   while (buttons_get()) ;
@@ -64,8 +67,7 @@ wait_for_exit()
   // Exit the program
 }
 
-void
-firmware_exception_handler()
+void firmware_exception_handler()
 {
   nxt_motor_reset_all();
   sound_freq(100,500, 80); // buzz
@@ -82,8 +84,7 @@ firmware_exception_handler()
 
 void device_test(void);
 
-int
-nxt_main()
+int nxt_main()
 {
   sp_init();
   display_set_auto_update_period(DEFAULT_UPDATE_PERIOD);
@@ -110,7 +111,7 @@ void device_test(void)
   U32 motor_mode = 0;
   int result;
 
-  while (1) {
+  while (!buttons_get()) {
     display_clear(0);
 
     if ((iterator & 15) == 0) {
@@ -207,8 +208,7 @@ void device_test(void)
   }
 }
 
-void
-main(void)
+void main(void)
 {
   /* When we get here:
    * PLL and flash have been initialised and
@@ -227,11 +227,16 @@ main(void)
   udp_init();
   systick_wait_ms(1000); // wait for LCD to stabilize
   display_init();
-  do 
-  {
-  	nxt_main();
-  }
-  while (true);
 
-  shutdown();
+  // Repeatedly run "app"
+  nxt_main();
+
+  // Go to update mode if back button pressed. Else turn off.
+  if (buttons_get() == BUTTON_ESCAPE) {
+    shutdown(1);
+  }
+  else {
+    shutdown(0);
+  }
+  
 }

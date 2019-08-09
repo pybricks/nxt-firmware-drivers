@@ -386,7 +386,7 @@ int dispatch_native(TWOBYTES signature, STACKWORD * paramBase)
     // Restartable garbage collection
     return garbage_collect();
   case shutDown_4_5V:
-    shutdown(); // does not return
+    shutdown(0); // does not return
   case boot_4_5V:
     display_clear(1);
     while (1) nxt_avr_firmware_update_mode(); // does not return 
