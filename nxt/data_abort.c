@@ -22,15 +22,6 @@ data_abort_C(void *pc)
   display_goto_xy(0, 3);
   display_string("ASR  ");
   display_hex(*AT91C_MC_ASR, 8);
-  display_goto_xy(0, 4);
-  display_string("OPCODE ");
-  if( old_pc != JNULL) display_int((int) *old_pc, 4); else display_string("???");
-  display_goto_xy(0,5);
-  display_string("DEBUG1 ");
-  display_hex(debug_word1,8);
-  display_goto_xy(0,6);
-  display_string("DEBUG2 ");
-  display_hex(debug_word2,8);
 
   display_force_update();
 }

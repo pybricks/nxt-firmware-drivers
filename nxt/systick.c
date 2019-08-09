@@ -33,7 +33,6 @@ void
 systick_low_priority_C(void)
 {
   *AT91C_AIC_ICCR = (1 << LOW_PRIORITY_IRQ);
-  FORCE_EVENT_CHECK();
   nxt_avr_1kHz_update();
   nxt_motor_1kHz_process();
 }

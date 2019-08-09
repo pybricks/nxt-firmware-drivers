@@ -549,7 +549,6 @@ i2c_disable(int port)
     *AT91C_PIOA_ODR = pinmask;
     i2c_ports[port] = NULL;
     build_active_list();
-    system_free((byte *)p);
     sp_reset(port);
     i2c_port_busy &= ~(1 << port);
   }

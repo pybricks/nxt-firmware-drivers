@@ -36,24 +36,12 @@ C_HOOK_OBJECTS := \
 	nxt_avr.o \
 	sensors.o \
 	nxt_lcd.o \
-	native.o \
 	platform_hooks.o
-
-C_VM_OBJECTS := \
-	$(VM_PREFIX)interpreter.o \
-	$(VM_PREFIX)threads.o \
-	$(VM_PREFIX)exceptions.o \
-	$(VM_PREFIX)memory.o \
-	$(VM_PREFIX)language.o \
-	$(VM_PREFIX)poll.o \
-	$(VM_PREFIX)debug.o \
-	$(VM_PREFIX)breakpoints.o
 
 C_OBJECTS := \
 	$(C_PLATFORM_OBJECTS) \
 	$(C_HOOK_OBJECTS) \
-	$(C_RAM_OBJECTS) \
-	$(C_VM_OBJECTS)
+	$(C_RAM_OBJECTS)
 
 S_OBJECTS := \
 	interrupts.o \

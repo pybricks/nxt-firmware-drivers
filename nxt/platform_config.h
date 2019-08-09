@@ -22,9 +22,9 @@ typedef unsigned long FOURBYTES;
 #  define get_sys_time() systick_get_ms()
 
 // Byte order:
-
+#ifndef LITTLE_ENDIAN
 #  define LITTLE_ENDIAN 1
-
+#endif
 // Floating point arithmetic supported?
 
 #  define FP_ARITHMETIC 1

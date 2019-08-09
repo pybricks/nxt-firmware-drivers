@@ -1,5 +1,4 @@
 
-#include "mytypes.h"
 #include "interrupts.h"
 #include "aic.h"
 #include "at91sam7.h"
@@ -9,20 +8,6 @@
 #include "flashprog.h"
 #include "nxt_avr.h"
 #include "twi.h"
-#include "types.h"
-#include "constants.h"
-#include "classes.h"
-#include "threads.h"
-#include "stack.h"
-#include "specialclasses.h"
-#include "specialsignatures.h"
-#include "language.h"
-#include "memory.h"
-#include "interpreter.h"
-#include "exceptions.h"
-#include "trace.h"
-#include "poll.h"
-#include "debug.h"
 #include "sensors.h"
 
 #include "nxt_avr.h"
@@ -68,7 +53,6 @@ int nxt_main() {
     // Run user app
     device_test();
 
-    init_events();
     display_reset();
     nxt_motor_reset_all();
     udp_reset();

@@ -88,7 +88,6 @@ void
 usart_free(usart *us)
 {
   usart_disable(us);
-  system_free((byte *)us);
 }
 
 /**
