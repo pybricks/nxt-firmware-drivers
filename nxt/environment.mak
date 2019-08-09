@@ -1,0 +1,18 @@
+LEJOS_NXT_ARM_GCC ?= arm-elf-gcc
+
+BASE_ABI_FLAGS := -mcpu=arm7tdmi -mlittle-endian -mfloat-abi=soft -mthumb-interwork
+LIB_ABI_FLAGS  := $(BASE_ABI_FLAGS) -mthumb
+
+MACRO_PROG_PATH = $(abspath $(shell "$(CC)" -print-prog-name="$(1)"))
+#MACRO_LIB_PATH  = $(abspath $(shell "$(CC)" $(LIB_ABI_FLAGS) -print-file-name="$(1)"))
+
+CC        := $(LEJOS_NXT_ARM_GCC)
+OBJCOPY   := $(call MACRO_PROG_PATH,objcopy)
+OBJDUMP   := $(call MACRO_PROG_PATH,objdump)
+
+.PHONY: EnvironmentMessage
+EnvironmentMessage:
+	@echo " CC      $(CC)"
+	@echo " OBJCOPY $(OBJCOPY)"
+	@echo " OBJDUMP $(OBJDUMP)"
+	@echo ""
