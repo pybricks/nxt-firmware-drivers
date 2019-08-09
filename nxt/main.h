@@ -4,7 +4,7 @@ extern unsigned int gNextProgramSize;
 extern byte *gNextProgram;
 extern unsigned int gProgramExecutions;
 
-extern int run_program(byte *start, int len);
+extern int run_program();
 extern void shutdown();
-extern void firmware_exception_handler(Throwable *exception, int method, int pc);
+extern void firmware_exception_handler();
 #endif

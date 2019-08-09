@@ -37,8 +37,6 @@ idle_hook()
   *AT91C_PMC_SCDR = AT91C_PMC_PCK;
 }
 
-extern void switch_thread_hook();
-
 /**
  * Dispatches a native method.
  */

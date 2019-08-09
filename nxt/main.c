@@ -62,87 +62,18 @@ wait_for_exit()
   // now wait for escape
   while (buttons_get() != BUTTON_ESCAPE) ;
   // Exit the program
-  schedule_request(REQUEST_EXIT);
 }
-
-#if USE_VARSTAT
-void disp_varstat( VarStat* vs)
-{
-  const char* sep = ",";
-  display_unsigned( vs->min, 0);
-  display_string( sep);
-  display_unsigned( vs->max, 0);
-  display_string( sep);
-  display_unsigned( vs->sum, 0);
-  display_string( sep);
-  display_unsigned( vs->count, 0);
-}
-#endif
 
 void
-firmware_exception_handler(Throwable * exception,
-			  const int methodRecord,
-			  int pc)
+firmware_exception_handler()
 {
-  int line = 0;
-  int *frame;
-  int cnt;
-  int dummy;
   nxt_motor_reset_all();
   sound_freq(100,500, 80); // buzz
   display_reset();
-  display_goto_xy(0, line++);
+  display_goto_xy(0, 0);
   display_string("Exception: ");
-  display_int(get_class_index(&(exception->_super)), 0);
-  if (exception->msg && ((String *)(exception->msg))->characters)
-  {
-    display_goto_xy(0, line++);
-    display_jstring((String *)(exception->msg));
-  }
-  if (!exception->stackTrace)
-  {
-    dummy = methodRecord << 16 | pc;
-    frame = &dummy;
-    cnt = 1;
-  }
-  else
-  {
-    frame = (int *)jint_array((Object *)(exception->stackTrace));
-    cnt = get_array_length((Object *)(exception->stackTrace));
-  }
-  while (cnt-- > 0 && line < 7)
-  {
-    display_goto_xy(0, line++);
-    display_string(" at: ");
-    display_int(*frame >> 16, 4);
-    display_string(":");
-    display_int(*frame & 0xffff, 0);
-    display_string("");
-    frame++;
-  }
   display_update();
   wait_for_exit();
-}
-
-void
-switch_thread_hook()
-{
-  int b = buttons_get();
-  static boolean buttonsDown = false;
-
-  // Check for ENTER and ESCAPE pressed
-  if (b == (BUTTON_ENTER|BUTTON_ESCAPE)) {
-    // only generate the event once per press...
-    if (!buttonsDown)
-    {
-      buttonsDown = true;
-      if (debug_user_interrupt()) return;
-      // exit the program
-      shutdown_program(true);
-    }
-  }
-  else
-    buttonsDown = false;
 }
 
 /***************************************************************************

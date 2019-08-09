@@ -363,7 +363,6 @@ int dispatch_native(TWOBYTES signature, STACKWORD * paramBase)
     }
     break;
   case flashExec_4II_5I:
-    push_word(run_program((byte *)(&FLASH_BASE[(p0*FLASH_PAGE_SIZE)]), paramBase[1]));
     break;
   case playSample_4IIIII_5V:
     sound_play_sample(((unsigned char *) &FLASH_BASE[(p0*FLASH_PAGE_SIZE)]) + paramBase[1],paramBase[2],paramBase[3],paramBase[4]);

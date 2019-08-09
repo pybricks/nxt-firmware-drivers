@@ -592,7 +592,6 @@ static DISPATCH_LABEL forceCheck[] =
 #if DEBUG_THREADS
       printf ("done switching thread\n");
 #endif
-      switch_thread_hook();
     }
     else if (switch_time - now == 1)
       run_collector();
