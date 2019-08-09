@@ -83,11 +83,11 @@ clean:
 
 $(VM_DIR)/specialclasses.h: $(VM_DIR)/specialclasses.db
 	@echo "### Generating header file $@ from $<"
-	../../dbtoh.sh class $< $@ 
+	$(VM_DIR)/dbtoh.sh class $< $@ 
 
 $(VM_DIR)/specialsignatures.h: $(VM_DIR)/specialsignatures.db
 	@echo "### Generating header file $@ from $<"
-	../../dbtoh.sh signature $< $@ 
+	$(VM_DIR)/dbtoh.sh signature $< $@ 
 
 
 # default rules for compiling sources

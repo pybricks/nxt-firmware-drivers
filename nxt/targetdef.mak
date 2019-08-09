@@ -7,7 +7,7 @@
 # C_OBJECTS are the rest of the C files
 # S_OBJECTS are the assembler files
 
-VM_DIR := ../../javavm
+VM_DIR := javavm
 VM_PREFIX := jvm_
 
 TARGETS := lejos_nxt_rom.bin # lejos_nxt_ram.bin lejos_nxt_samba.bin
