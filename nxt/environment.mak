@@ -1,4 +1,4 @@
-LEJOS_NXT_ARM_GCC ?= arm-elf-gcc
+LEJOS_NXT_ARM_GCC ?= arm-none-eabi-gcc
 
 BASE_ABI_FLAGS := -mcpu=arm7tdmi -mlittle-endian -mfloat-abi=soft -mthumb-interwork
 LIB_ABI_FLAGS  := $(BASE_ABI_FLAGS) -mthumb
