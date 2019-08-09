@@ -79,7 +79,9 @@ firmware_exception_handler()
 /***************************************************************************
  * int nxt_main *--------------------------------------------------------------------------
  ***************************************************************************/
-//int main (int argc, char *argv[])
+
+void device_test(void);
+
 int
 nxt_main()
 {
@@ -87,6 +89,7 @@ nxt_main()
   display_set_auto_update_period(DEFAULT_UPDATE_PERIOD);
 
   // Run user app
+  device_test();
 
   init_events();
   display_reset();
