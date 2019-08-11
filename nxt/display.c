@@ -1,9 +1,7 @@
 #include "display.h"
 #include "nxt_lcd.h"
 #include "systick.h"
-#include "constants.h"
 #include <stdlib.h>
-#include "types.h"
 #include "nxt_spi.h"
 #include <string.h>
 
@@ -570,7 +568,7 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
     byte outBit = outStartBit;
     byte outPixels = dst[outIndex];
     int cnt = h;
-    while(true)
+    while(1)
     {
       if (noDst)
       {

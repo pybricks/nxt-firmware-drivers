@@ -14,8 +14,6 @@
  */
 #include "platform_config.h"
 
-#include "types.h"
-#include "classes.h"
 #include "at91sam7.h"
 #include "sensors.h"
 #include "nxt_avr.h"

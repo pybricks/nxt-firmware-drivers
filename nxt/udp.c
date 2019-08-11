@@ -12,7 +12,6 @@
  * be used from the PC side applications that work with the standard Lego
  * firmware).
  */
-#include "types.h"
 #include "irq.h"
 #include "udp.h"
 #include "interrupts.h"

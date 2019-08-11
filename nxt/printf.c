@@ -28,7 +28,6 @@
 
 #define putchar(c) outbyte(c)
 */
-#include "types.h"
 #if REMOTE_CONSOLE
 #include <stdarg.h>
 #include "udp.h"

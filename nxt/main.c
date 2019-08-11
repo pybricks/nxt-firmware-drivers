@@ -23,12 +23,11 @@
 #include "udp.h"
 #include "flashprog.h"
 #include "hs.h"
-#include "constants.h"
 
 #include <string.h>
 
 void shutdown(int update_mode) {
-    nxt_lcd_enable(false);
+    nxt_lcd_enable(0);
     for(;;) {
         if (update_mode) {
             nxt_avr_firmware_update_mode();
