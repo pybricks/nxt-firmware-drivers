@@ -16,18 +16,10 @@ typedef unsigned int uint;
 /* NOTE
  * The following buffer is declared with one extra line (the +1).
  * This is to allow fast dma update of the screen (see nxt_spi.c
- * for details). The buffer is now created wrapped inside of a Java
- * array. This allows the buffer to be shared with Java applications.
- * NOTE 2
- * We could initialize the header fields here (as we do for the font), but
- * for some reason this generates much more code than doing it later...
+ * for details).
  */
-static struct
-{
-  BigArray arrayHdr;
-  U8 display[DISPLAY_DEPTH+1][DISPLAY_WIDTH];
-} display_array;
-static U8 (*display_buffer)[DISPLAY_WIDTH] = display_array.display;
+U8 display[DISPLAY_DEPTH+1][DISPLAY_WIDTH];
+static U8 (*display_buffer)[DISPLAY_WIDTH] = display;
 
 /* Font table for a 5x8 font. 1 pixel spacing between chars */
 #define N_CHARS 128
@@ -35,23 +27,8 @@ static U8 (*display_buffer)[DISPLAY_WIDTH] = display_array.display;
 #define CELL_WIDTH (FONT_WIDTH + 1)
 #define DISPLAY_CHAR_WIDTH (DISPLAY_WIDTH/(CELL_WIDTH))
 #define DISPLAY_CHAR_DEPTH (DISPLAY_DEPTH)
-static const struct
-{
-  BigArray arrayHdr;
-  U8 font[N_CHARS][FONT_WIDTH];
-} font_array =
-{{{{
-    .length=LEN_BIGARRAY,
-    .mark = 3,
-    .class = T_BYTE+ALJAVA_LANG_OBJECT
-   },
-   {0,
-   0}
-  },
-  N_CHARS*FONT_WIDTH,
-  2
- },
- {
+
+static const U8 font_array[N_CHARS][FONT_WIDTH] = {
 /* 0x00 */ {0x3E, 0x36, 0x2A, 0x36, 0x3E},
 /* 0x01 */ {0x3E, 0x55, 0x61, 0x55, 0x3E},
 /* 0x02 */ {0x3E, 0x6B, 0x5F, 0x6B, 0x3E},
@@ -276,8 +253,8 @@ static const struct
 /* 0x7E */ {0x08, 0x06, 0x08, 0x30, 0x08},
 #endif
 /* 0x7F */ {0x55, 0xAA, 0x55, 0xAA, 0x55},
-}};
-static const U8 (*font)[FONT_WIDTH] = font_array.font;
+};
+static const U8 (*font)[FONT_WIDTH] = font_array;
 
 U32 display_update_time = 0;
 U32 display_update_complete_time = 0;
@@ -381,23 +358,6 @@ display_string(const char *str)
   }
 }
 
-void
-display_jstring(String *s)
-{
-  int len = get_array_length((Object *)(s->characters));
-  char *str = (char *)jchar_array((Object *)(s->characters));
-  while (len-- > 0)
-  {
-    if (*str != '\n') {
-      display_char(*str);
-      display_x++;
-    } else {
-      display_x = 0;
-      display_y++;
-    }
-    str += 2;
-  }
-}
 
 void
 display_hex(U32 val, U32 places)
@@ -660,18 +620,6 @@ display_get_buffer(void)
   return (U8 *)display_buffer;
 }
 
-STACKWORD
-display_get_array(void)
-{
-  return (STACKWORD)ptr2word(&display_array);
-}
-
-STACKWORD
-display_get_font(void)
-{
-  return (STACKWORD)ptr2word(&font_array);
-}
-
 void
 display_reset()
 {
@@ -686,49 +634,7 @@ display_reset()
 void
 display_init(void)
 {
-  // Initialise the array parameters so that the display can
-  // be memory mapped into the Java address space
-  // NOTE This object must always be marked, otherwise very, very bad
-  // things will happen!
-  display_array.arrayHdr.hdr.flags.mark = 3;
-  display_array.arrayHdr.hdr.flags.length = LEN_BIGARRAY;
-  display_array.arrayHdr.hdr.flags.class = T_BYTE + ALJAVA_LANG_OBJECT;
-  display_array.arrayHdr.hdr.sync.monitorCount = 0;
-  display_array.arrayHdr.hdr.sync.threadId = 0;
-  display_array.arrayHdr.length = DISPLAY_DEPTH*DISPLAY_WIDTH;
-  display_array.arrayHdr.offset = 2;
   nxt_lcd_init((U8 *)display_buffer);
   display_reset();
 }
 
-#if 0
-void
-display_test(void)
-{
-  int iterator = 0;
-
-  nxt_lcd_init((U8 *)display_buffer);
-  while (1) {
-    display_clear(0);
-    display_goto_xy(iterator, 0);
-    display_string("LEJOS NXT");
-    display_goto_xy(0, 1);
-    display_string("0123456789.:/");
-    display_goto_xy(0, 2);
-    display_string("abcdefghijklm");
-    display_goto_xy(0, 3);
-    display_string("nopqrstuvwxyz");
-    display_goto_xy(0, 4);
-    display_string("ABCDEFGHIJKLM");
-    display_goto_xy(0, 5);
-    display_string("NOPQRSTUVWXYZ");
-
-    display_goto_xy(0, 7);
-    display_string("TIME ");
-    display_unsigned(systick_get_ms(), 0);
-    iterator = (iterator + 1) & 7;
-    display_update();
-    systick_wait_ms(2000);
-  }
-}
-#endif
