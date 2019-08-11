@@ -80,7 +80,7 @@ flash_write_page_buffer(FOURBYTES *page, int page_num)
   // Allow call backs on 1ms tick
   systick_resume();
   if (!(status & AT91C_MC_FRDY)) return -2;
-  return FLASH_PAGE_SIZE*sizeof(U32);
+  return FLASH_PAGE_SIZE*sizeof(uint32_t);
 }
 
 /**
@@ -88,11 +88,11 @@ flash_write_page_buffer(FOURBYTES *page, int page_num)
  * requested page.
  * Return NULL if the page is not valid.
  */
-U32 *
+uint32_t *
 flash_get_page_buffer(int page)
 {
   if (page + flash_start_page >= FLASH_MAX_PAGES) return NULL;
-  return (U32 *) (FLASH_BASE + page*FLASH_PAGE_SIZE);
+  return (uint32_t *) (FLASH_BASE + page*FLASH_PAGE_SIZE);
 }
   
 
@@ -129,7 +129,7 @@ flash_read_page(FOURBYTES *page, int page_num)
   if (page_num + flash_start_page >= FLASH_MAX_PAGES) return -3;
   for (i = 0; i < FLASH_PAGE_SIZE; i++)
     page[i] = FLASH_BASE[(page_num*FLASH_PAGE_SIZE)+i];
-  return FLASH_PAGE_SIZE*sizeof(U32);
+  return FLASH_PAGE_SIZE*sizeof(uint32_t);
 }
 
 

@@ -1,7 +1,7 @@
 #ifndef __I2C_H__
 #define __I2C_H__
 
-#include "mytypes.h"
+#include <stdint.h>
 
 #define I2C_N_PORTS 4
 
@@ -19,12 +19,12 @@ void i2c_init(void);
 
 int i2c_status(int port);
 int i2c_start(int port, 
-              U32 address, 
-              U8 *data,
+              uint32_t address, 
+              uint8_t *data,
               int write_len,
               int read_len);
 
-int i2c_complete( int port, U8 *data, U32 nbytes);
+int i2c_complete( int port, uint8_t *data, uint32_t nbytes);
 void i2c_test(void);
 
 #endif

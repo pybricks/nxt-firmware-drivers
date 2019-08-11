@@ -1,4 +1,3 @@
-#include "mytypes.h"
 #include "at91sam7.h"
 #include "uart.h"
 #include "bt.h"
@@ -94,22 +93,22 @@ void bt_disable()
 }
   
 
-U32 bt_get_mode()
+uint32_t bt_get_mode()
 {
   // return the bt4 mode value.
-  return (U32) *AT91C_ADC_CDR6;
+  return (uint32_t) *AT91C_ADC_CDR6;
 }
 
 
-U32 bt_write(U8 *buf, U32 off, U32 len)
+uint32_t bt_write(uint8_t *buf, uint32_t off, uint32_t len)
 {
   return usart_write(bt, buf, off, len);
 }
 
-S32 bt_event_check(S32 filter)
+int32_t bt_event_check(int32_t filter)
 {
   // Return the current event state.
-  S32 ret = usart_status(bt);
+  int32_t ret = usart_status(bt);
   // check command state
   if (*AT91C_ADC_CDR6 > 512)
     ret |= BT_STREAMMODE;
@@ -134,7 +133,7 @@ void bt_set_reset_high(void)
   *AT91C_PIOA_SODR = BT_RST_PIN;
 }
 
-U32 bt_read(U8 * buf, U32 off, U32 len)
+uint32_t bt_read(uint8_t * buf, uint32_t off, uint32_t len)
 {
   return usart_read(bt, buf, off, len);
 }
@@ -165,7 +164,7 @@ void bt_reset(void)
   bt_set_reset_low();
   // Wait and discard any packets that may be around
   int cnt = 100;
-  U8 *buf = bt->out_buf[0];
+  uint8_t *buf = bt->out_buf[0];
   while (cnt-- > 0)
   {
     bt_read(buf, 0, OUT_BUF_SZ);

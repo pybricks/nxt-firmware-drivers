@@ -31,7 +31,7 @@ byte_fifo_clear(struct byte_fifo *f)
  *   buffer_size: The length of the buffer in bytes.
  */
 void
-byte_fifo_init(struct byte_fifo *f, U8 *buffer, U32 buffer_size)
+byte_fifo_init(struct byte_fifo *f, uint8_t *buffer, uint32_t buffer_size)
 {
   f->buffer = buffer;
   f->buffer_size = buffer_size;
@@ -60,7 +60,7 @@ byte_fifo_init(struct byte_fifo *f, U8 *buffer, U32 buffer_size)
  *          otherwise.
  */
 int
-byte_fifo_put(struct byte_fifo *f, U32 force, U8 b)
+byte_fifo_put(struct byte_fifo *f, uint32_t force, uint8_t b)
 {
   /* If the fifo is full, only proceed if the operation was
    * forced. Otherwise, fail now.
@@ -100,7 +100,7 @@ byte_fifo_put(struct byte_fifo *f, U32 force, U8 b)
  *          otherwise.
  */
 int
-byte_fifo_get(struct byte_fifo *f, U8 *b)
+byte_fifo_get(struct byte_fifo *f, uint8_t *b)
 {
   /* Fail if the fifo is empty. */
   if (!f->holding)

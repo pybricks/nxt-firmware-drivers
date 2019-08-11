@@ -66,8 +66,8 @@ int nxt_main() {
 
 void device_test(void) {
     int iterator = 0;
-    U32 buttons;
-    U32 motor_mode = 0;
+    uint32_t buttons;
+    uint32_t motor_mode = 0;
 
     while (!buttons_get()) {
         display_clear(0);

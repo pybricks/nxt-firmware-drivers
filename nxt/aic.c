@@ -8,7 +8,6 @@
 
 #include "at91sam7.h"
 
-#include "mytypes.h"
 #include "interrupts.h"
 #include "irq.h"
 
@@ -80,7 +79,7 @@ aic_initialise(void)
  *   isr: A pointer to the interrupt service routine function.
  */
 void
-aic_set_vector(U32 vector, U32 mode, void (*isr)(void))
+aic_set_vector(uint32_t vector, uint32_t mode, void (*isr)(void))
 {
   if (vector < 32) {
     int i_state = interrupts_get_and_disable();
@@ -99,7 +98,7 @@ aic_set_vector(U32 vector, U32 mode, void (*isr)(void))
  *   vector: The peripheral ID of the interrupt line to enable.
  */
 void
-aic_mask_on(U32 vector)
+aic_mask_on(uint32_t vector)
 {
   int i_state = interrupts_get_and_disable();
 
@@ -115,7 +114,7 @@ aic_mask_on(U32 vector)
  *   vector: The peripheral ID of the interrupt line to disable.
  */
 void
-aic_mask_off(U32 vector)
+aic_mask_off(uint32_t vector)
 {
   int i_state = interrupts_get_and_disable();
 
@@ -131,7 +130,7 @@ aic_mask_off(U32 vector)
  *   vector: The peripheral ID of the interrupt line to clear.
  */
 void
-aic_clear(U32 vector)
+aic_clear(uint32_t vector)
 {
   int i_state = interrupts_get_and_disable();
 

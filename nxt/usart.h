@@ -11,24 +11,24 @@ typedef struct
 {
   AT91S_PDC *dma;
   AT91S_USART *dev;
-  U8 *in_buf[BUF_CNT];
-  U8 *out_buf[BUF_CNT];
+  uint8_t *in_buf[BUF_CNT];
+  uint8_t *out_buf[BUF_CNT];
   int in_offset;
   int in_size;
   int out_size;
-  U8 in_base;
-  U8 out_base;
+  uint8_t in_base;
+  uint8_t out_base;
 } usart;
 
 usart *usart_allocate(AT91S_USART *dev, AT91S_PDC *dma, int inSz, int outSz);
 void usart_enable(usart *us);
 void usart_disable(usart *us);
 void usart_free(usart *us);
-U32 usart_status(usart *us);
-U32 usart_write(usart *us, U8 *buf, U32 off, U32 len);
-U32 usart_read(usart *us, U8 * buf, U32 off, U32 length);
-U8 * usart_get_write_buffer(usart *us);
-void usart_write_buffer(usart *us, U32 len);
+uint32_t usart_status(usart *us);
+uint32_t usart_write(usart *us, uint8_t *buf, uint32_t off, uint32_t len);
+uint32_t usart_read(usart *us, uint8_t * buf, uint32_t off, uint32_t length);
+uint8_t * usart_get_write_buffer(usart *us);
+void usart_write_buffer(usart *us, uint32_t len);
 
 
 

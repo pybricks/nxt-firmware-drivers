@@ -14,7 +14,6 @@
  */
 
 
-#include "mytypes.h"
 #include "twi.h"
 #include "irq.h"
 #include "interrupts.h"
@@ -44,20 +43,20 @@ static enum {
   TWI_TX_BUSY,
 } twi_state;
 
-static U32 twi_pending;
-static U8 *twi_ptr;
-static U32 twi_mask;
+static uint32_t twi_pending;
+static uint8_t *twi_ptr;
+static uint32_t twi_mask;
 
 // Accumlate stats
 #ifdef USE_STATS
 static struct {
-  U32 rx_done;
-  U32 tx_done;
-  U32 bytes_tx;
-  U32 bytes_rx;
-  U32 unre;
-  U32 ovre;
-  U32 nack;
+  uint32_t rx_done;
+  uint32_t tx_done;
+  uint32_t bytes_tx;
+  uint32_t bytes_rx;
+  uint32_t unre;
+  uint32_t ovre;
+  uint32_t nack;
 } twi_stats;
 #define STATS(code) code;
 #else
@@ -88,7 +87,7 @@ twi_status(void)
 void
 twi_isr_C(void)
 {
-  U32 status = *AT91C_TWI_SR & twi_mask;
+  uint32_t status = *AT91C_TWI_SR & twi_mask;
   if (status & AT91C_TWI_RXRDY) {
     STATS(twi_stats.bytes_rx++)
     *twi_ptr++ = *AT91C_TWI_RHR;
@@ -137,7 +136,7 @@ twi_isr_C(void)
 void
 twi_reset(void)
 {
-  U32 clocks = 9;
+  uint32_t clocks = 9;
 
   *AT91C_TWI_IDR = ~0;
 
@@ -206,7 +205,7 @@ twi_init(void)
  * do not support single byte reads, or internal register addresses.
  */
 void
-twi_start_read(U32 dev_addr, U8 *data, U32 nBytes)
+twi_start_read(uint32_t dev_addr, uint8_t *data, uint32_t nBytes)
 {
   if (twi_state < TWI_RX_BUSY) {
     twi_state = TWI_RX_BUSY;
@@ -226,11 +225,11 @@ twi_start_read(U32 dev_addr, U8 *data, U32 nBytes)
  * do not support single byte reads, or internal register addresses.
  */
 void
-twi_start_write(U32 dev_addr, const U8 *data, U32 nBytes)
+twi_start_write(uint32_t dev_addr, const uint8_t *data, uint32_t nBytes)
 {
   if (twi_state < TWI_RX_BUSY) {
     twi_state = TWI_TX_BUSY;
-    twi_ptr = (U8 *)data;
+    twi_ptr = (uint8_t *)data;
     twi_pending = nBytes;
 
     *AT91C_TWI_MMR = AT91C_TWI_IADRSZ_NO|((dev_addr & 0x7f) << 16);

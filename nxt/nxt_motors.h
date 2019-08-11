@@ -1,14 +1,14 @@
 #ifndef __NXT_MOTORS_H__
 #  define __NXT_MOTORS_H__
 
-#  include "mytypes.h"
-
 #  define NXT_N_MOTORS 3
 
-int nxt_motor_get_count(U32 n);
-void nxt_motor_set_count(U32 n, int count);
+#include <stdint.h>
 
-void nxt_motor_set_speed(U32 n, int speed_percent, int brake);
+int nxt_motor_get_count(uint32_t n);
+void nxt_motor_set_count(uint32_t n, int count);
+
+void nxt_motor_set_speed(uint32_t n, int speed_percent, int brake);
 
 void nxt_motor_init(void);
 

@@ -1,7 +1,7 @@
 #ifndef BT_H_
 #define BT_H_
 
-#include "mytypes.h"
+#include <stdint.h>
 
 #define MSG_BEGIN_INQUIRY 0
 #define MSG_CANCEL_INQUIRY 1
@@ -73,10 +73,10 @@ void bt_clear_arm7_cmd(void);
 void bt_set_arm7_cmd(void);
 void bt_set_reset_high(void);
 void bt_set_reset_low(void);
-U32 bt_get_mode(void);
+uint32_t bt_get_mode(void);
 void bt_reset(void);
-U32 bt_write(U8 *buf, U32 off, U32 len);
-U32 bt_read(U8 * buf, U32 off, U32 len);
-S32 bt_event_check(S32);
+uint32_t bt_write(uint8_t *buf, uint32_t off, uint32_t len);
+uint32_t bt_read(uint8_t * buf, uint32_t off, uint32_t len);
+int32_t bt_event_check(int32_t);
 
 #endif /*BT_H_*/

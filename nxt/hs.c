@@ -5,7 +5,6 @@
  * functions.
  * Author: Andy Shaw
  */
-#include "mytypes.h"
 #include "at91sam7.h"
 #include "hs.h"
 #include "aic.h"
@@ -86,19 +85,19 @@ void hs_init(void)
   hs_disable();
 }
 
-U32 hs_write(U8 *buf, U32 off, U32 len)
+uint32_t hs_write(uint8_t *buf, uint32_t off, uint32_t len)
 {
   return usart_write(hs, buf, off, len);
 }
 
-U32 hs_pending()
+uint32_t hs_pending()
 {
   return usart_status(hs);
 }
 
 
 
-U32 hs_read(U8 * buf, U32 off, U32 len)
+uint32_t hs_read(uint8_t * buf, uint32_t off, uint32_t len)
 {
   return usart_read(hs, buf, off, len);
 }
@@ -116,26 +115,26 @@ U32 hs_read(U8 * buf, U32 off, U32 len)
 #define ST_DATA  2
 
 // "Class vars"
-U8 *frame; // pointer to he curent frame
-U16 frameCRC; // Accumulated CRC value
-U32 frameLen; // current frame length
-U32 state; // input state
-U16 *CRCTable; // pointer to initialised CRC lookup table
+uint8_t *frame; // pointer to he curent frame
+uint16_t frameCRC; // Accumulated CRC value
+uint32_t frameLen; // current frame length
+uint32_t state; // input state
+uint16_t *CRCTable; // pointer to initialised CRC lookup table
 
 /**
  * Add a single byte to the current frame. Include the value in the CRC. Byte
  * stuff if needed.
  */
-static void addByte(U8 b)
+static void addByte(uint8_t b)
 {
   //RConsole.println("Add byte " + b + " len " + frameLen + " max " + frame.length);
   // update crc
-  frameCRC = (U16)((frameCRC << 8) ^ CRCTable[(b ^ (frameCRC >> 8)) & 0xff]);
+  frameCRC = (uint16_t)((frameCRC << 8) ^ CRCTable[(b ^ (frameCRC >> 8)) & 0xff]);
   // Byte stuff?
   if (b == BB_FLAG || b == BB_ESCAPE)
   {
     frame[frameLen++] = BB_ESCAPE;
-    frame[frameLen++] = (U8)(b ^ BB_XOR);
+    frame[frameLen++] = (uint8_t)(b ^ BB_XOR);
   }
   else
     frame[frameLen++] = b;
@@ -144,19 +143,19 @@ static void addByte(U8 b)
 /**
  * Add a series of bytes to the current frame, add to CRC, byte stuff if needed
  */
-static void addBytes(U8 *data, int len)
+static void addBytes(uint8_t *data, int len)
 {
   while (len-- > 0)
   {
-    U8 b = *data++;
-    frameCRC = (U16)((frameCRC << 8) ^ CRCTable[(b ^ (frameCRC >> 8)) & 0xff]);
+    uint8_t b = *data++;
+    frameCRC = (uint16_t)((frameCRC << 8) ^ CRCTable[(b ^ (frameCRC >> 8)) & 0xff]);
     if (b == BB_FLAG || b == BB_ESCAPE)
     {
       frame[frameLen++] = BB_ESCAPE;
-      frame[frameLen++] = (U8)(b ^ BB_XOR);
+      frame[frameLen++] = (uint8_t)(b ^ BB_XOR);
     }
     else
-      frame[frameLen++] = (U8)b;
+      frame[frameLen++] = (uint8_t)b;
   }
 }
 
@@ -164,16 +163,16 @@ static void addBytes(U8 *data, int len)
  * Add the CRC value (FCS Frame Check Sum). Note this value must be byte stuffed
  * but must not impact the actual CRC.
  */
-static void addFCS(U16 FCS)
+static void addFCS(uint16_t FCS)
 {
-  addByte((U8)(FCS >> 8));
-  addByte((U8)FCS);
+  addByte((uint8_t)(FCS >> 8));
+  addByte((uint8_t)FCS);
 }
 
 /**
  * Create and send a frame.
  */
-int hs_send(U8 address, U8 control, U8 *data, int offset, int len, U16 *CRCTab)
+int hs_send(uint8_t address, uint8_t control, uint8_t *data, int offset, int len, uint16_t *CRCTab)
 {
   // Make sure we have room
   frame = usart_get_write_buffer(hs);
@@ -205,9 +204,9 @@ int hs_send(U8 address, U8 control, U8 *data, int offset, int len, U16 *CRCTab)
  * < 0 packet not yet started. 
  * == 0 packet being assembled but not yet complete.
  */
-int hs_recv(U8 *data, int len, U16 *CRCTab, int reset)
+int hs_recv(uint8_t *data, int len, uint16_t *CRCTab, int reset)
 {
-  U8 cur;
+  uint8_t cur;
 
   // Set things up
   frame = data;
@@ -235,8 +234,8 @@ int hs_recv(U8 *data, int len, U16 *CRCTab, int reset)
         else
         {
           // Add the byte into the frame.
-          frame[frameLen++] = (U8)cur;
-          frameCRC = (U16)((frameCRC << 8) ^ CRCTable[(cur ^ (frameCRC >> 8)) & 0xff]);
+          frame[frameLen++] = (uint8_t)cur;
+          frameCRC = (uint16_t)((frameCRC << 8) ^ CRCTable[(cur ^ (frameCRC >> 8)) & 0xff]);
         }
         state = ST_DATA;
         break;
@@ -255,8 +254,8 @@ int hs_recv(U8 *data, int len, U16 *CRCTab, int reset)
           state = ST_FLAG;
         else
         {
-          frame[frameLen++] = (U8)cur;
-          frameCRC = (U16)((frameCRC << 8) ^ CRCTable[(cur ^ (frameCRC >> 8)) & 0xff]);
+          frame[frameLen++] = (uint8_t)cur;
+          frameCRC = (uint16_t)((frameCRC << 8) ^ CRCTable[(cur ^ (frameCRC >> 8)) & 0xff]);
         }
         break;
     }

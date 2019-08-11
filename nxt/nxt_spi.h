@@ -1,7 +1,7 @@
 #ifndef __NXT_SPI_H__
 #  define __NXT_SPI_H__
 
-#  include "mytypes.h"
+#include <stdint.h>
 
 /*
  * Note that this is not a normal SPI interface, 
@@ -16,8 +16,8 @@
  */
 
 void nxt_spi_init(void);
-void nxt_spi_write(U32 CD, const U8 *data, U32 nBytes);
-void nxt_spi_set_display(const U8 *disp);
+void nxt_spi_write(uint32_t CD, const uint8_t *data, uint32_t nBytes);
+void nxt_spi_set_display(const uint8_t *disp);
 void nxt_spi_refresh(void);
 
 // Time required to perform a complete refresh of the screen.

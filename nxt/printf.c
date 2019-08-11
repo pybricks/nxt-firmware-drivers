@@ -38,12 +38,12 @@
 #include "systick.h"
 #endif
 
-U8 buf[64];
+uint8_t buf[64];
 int len = 0;
 int putchar(int c)
 {
   if (len < sizeof(buf)-2)
-    buf[len++ + 2] = (U8)c;
+    buf[len++ + 2] = (uint8_t)c;
   return 1;
 }
 

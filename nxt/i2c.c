@@ -123,9 +123,9 @@
 
 
 struct i2c_partial_transaction {
-  U8  state;    // Initial state for this transaction
-  U16 nbits;	// N bits to transfer
-  U8* data;	// Data buffer
+  uint8_t  state;    // Initial state for this transaction
+  uint16_t nbits;	// N bits to transfer
+  uint8_t* data;	// Data buffer
 };
 
 typedef enum {
@@ -164,26 +164,26 @@ typedef enum {
 } i2c_port_state;
 
 typedef struct {
-  U32 scl_pin;
-  U32 sda_pin;
-  U32 ready_mask;
-  U8  buffer[I2C_BUF_SIZE+2];
+  uint32_t scl_pin;
+  uint32_t sda_pin;
+  uint32_t ready_mask;
+  uint8_t  buffer[I2C_BUF_SIZE+2];
   struct i2c_partial_transaction partial_transaction[I2C_MAX_PARTIAL_TRANSACTIONS];
   struct i2c_partial_transaction *current_pt;
 
   i2c_port_state state;
 
-  U8  *data;
-  U32 nbits;
+  uint8_t  *data;
+  uint32_t nbits;
   int delay;
-  U8  bits;
-  U8 fault:1;
-  U8 lego_mode:1;
-  U8 always_active:1;
-  U8 no_release:1;
-  U8 high_speed:1;
-  U8 port_bit;
-  U16 read_len;
+  uint8_t  bits;
+  uint8_t fault:1;
+  uint8_t lego_mode:1;
+  uint8_t always_active:1;
+  uint8_t no_release:1;
+  uint8_t high_speed:1;
+  uint8_t port_bit;
+  uint16_t read_len;
 } i2c_port;
 
 static i2c_port *i2c_ports[I2C_N_PORTS];
@@ -192,7 +192,7 @@ static i2c_port *i2c_ports[I2C_N_PORTS];
 // dynamically as required.
 static i2c_port *i2c_active[2][I2C_N_PORTS+1];
 static i2c_port **active_list = i2c_active[0];
-static volatile U32 i2c_port_busy = 0;
+static volatile uint32_t i2c_port_busy = 0;
 
 // The I2C state machines are pumped by a timer interrupt
 // running at 2x the bit speed. This state machine has been
@@ -545,7 +545,7 @@ i2c_disable(int port)
   if (port >= 0 && port < I2C_N_PORTS && i2c_ports[port]) {
     i2c_port *p = i2c_ports[port];
 
-    U32 pinmask = p->scl_pin | p->sda_pin;
+    uint32_t pinmask = p->scl_pin | p->sda_pin;
     *AT91C_PIOA_ODR = pinmask;
     i2c_ports[port] = NULL;
     build_active_list();
@@ -568,7 +568,7 @@ i2c_disable_all()
 int i2c_enable(int port, int mode)
 {
   if (port >= 0 && port < I2C_N_PORTS) {
-    U32 pinmask;
+    uint32_t pinmask;
     i2c_port *p = i2c_ports[port];
     // Allocate memory if required
     if (!p)
@@ -669,14 +669,14 @@ i2c_status(int port)
  */
 int
 i2c_start(int port, 
-          U32 address, 
-          U8 *write_data,
+          uint32_t address, 
+          uint8_t *write_data,
           int write_len,
           int read_len)
 { 
   i2c_port *p;
   struct i2c_partial_transaction *pt;
-  U8 *data;
+  uint8_t *data;
   int status = i2c_status(port);
   if (status < 0) return status;
   // check buffer size
@@ -756,8 +756,8 @@ i2c_start(int port,
 // Check for the operation to be complete and return and read data.
 int
 i2c_complete(int port,
-             U8 *data,
-             U32 nbytes)
+             uint8_t *data,
+             uint32_t nbytes)
 {
   i2c_port *p;
   int status = i2c_status(port);

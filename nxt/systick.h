@@ -1,17 +1,17 @@
 #ifndef  __SYSTICK_H__
 #  define __SYSTICK_H__
 
-#  include "mytypes.h"
+#include <stdint.h>
 
 void systick_init(void);
 
-U32 systick_get_ms(void);
+uint32_t systick_get_ms(void);
 
-U64 systick_get_ns(void);
+uint64_t systick_get_ns(void);
 
-void systick_wait_ms(U32 ms);
+void systick_wait_ms(uint32_t ms);
 
-void systick_wait_ns(U32 n);
+void systick_wait_ns(uint32_t n);
 
 void systick_test(void);
 

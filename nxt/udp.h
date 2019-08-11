@@ -1,18 +1,18 @@
 #ifndef __UDP_H__
 #  define __UDP_H__
 
-#  include "mytypes.h"
+#include <stdint.h>
 
 int udp_init(void);
 void udp_disable(void);
 void udp_enable(int reset);
 void udp_reset(void);
-int udp_write(U8* buf, int off, int len);
-int udp_read(U8* buf, int off, int len);
-void udp_set_serialno(U8 *serNo, int len);
-void udp_set_name(U8 *name, int len);
-void udp_rconsole(U8* buf, int len);
-S32 udp_event_check(S32 filter);
+int udp_write(uint8_t* buf, int off, int len);
+int udp_read(uint8_t* buf, int off, int len);
+void udp_set_serialno(uint8_t *serNo, int len);
+void udp_set_name(uint8_t *name, int len);
+void udp_rconsole(uint8_t* buf, int len);
+int32_t udp_event_check(int32_t filter);
 
 #define   USB_TIMEOUT   3000
 #define END_OF_BUS_RESET ((unsigned int) 0x1 << 12)

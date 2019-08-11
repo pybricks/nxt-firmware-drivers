@@ -3,7 +3,6 @@
  * hardware setup must be performed by a hardware specific set of
  * functions before calling the enable methos provided here.
  */
-#include "mytypes.h"
 #include "at91sam7.h"
 #include "hs.h"
 #include "aic.h"
@@ -23,7 +22,7 @@ usart_allocate(AT91S_USART *dev, AT91S_PDC *dma, int inSz, int outSz)
 {
   usart *us;
   // do memory allocation for buffer space
-  U8 *mem = system_allocate(sizeof(usart) + inSz*BUF_CNT + outSz*BUF_CNT);
+  uint8_t *mem = system_allocate(sizeof(usart) + inSz*BUF_CNT + outSz*BUF_CNT);
   if (mem == NULL) return NULL;
   us = (usart *) mem;
   us->dma = dma;
@@ -93,7 +92,7 @@ usart_free(usart *us)
 /**
  * return the current read/write state of the usart.
  */
-U32 usart_status(usart *us)
+uint32_t usart_status(usart *us)
 {
   // return the state of any pending i/o requests one bit for input one bit
   // for output.
@@ -117,7 +116,7 @@ U32 usart_status(usart *us)
 /**
  * write bytes to the device. Return the number of bytes actually written.
  */
-U32 usart_write(usart *us, U8 *buf, U32 off, U32 len)
+uint32_t usart_write(usart *us, uint8_t *buf, uint32_t off, uint32_t len)
 {
   AT91S_PDC *dma = us->dma;
   // Write data to the device. Return the number of bytes written
@@ -138,7 +137,7 @@ U32 usart_write(usart *us, U8 *buf, U32 off, U32 len)
  * Read bytes from the device. Return the number of bytes read into the
  * buffer or -1 if the a buffer overflow has occurred.
  */   
-U32 usart_read(usart *us, U8 * buf, U32 off, U32 len)
+uint32_t usart_read(usart *us, uint8_t * buf, uint32_t off, uint32_t len)
 {
   AT91S_PDC *dma = us->dma;
   int read_len;
@@ -158,13 +157,13 @@ U32 usart_read(usart *us, U8 * buf, U32 off, U32 len)
   if (len1 > idx)
   {
     cnt = len1 - idx;
-    U8 *buf_ptr = us->in_buf[us->in_base];
+    uint8_t *buf_ptr = us->in_buf[us->in_base];
     if (cnt > len) cnt = len;
     for(;i < cnt; i++) buf[off+i] = buf_ptr[idx++];
   }
   if (len2 > 0)
   {
-    U8 *buf_ptr = us->in_buf[(us->in_base + 1) % BUF_CNT];
+    uint8_t *buf_ptr = us->in_buf[(us->in_base + 1) % BUF_CNT];
     idx -= in_sz;
     cnt += len2 - idx;
     if (cnt > len) cnt = len;
@@ -208,7 +207,7 @@ U32 usart_read(usart *us, U8 * buf, U32 off, U32 len)
  * return a pointer to the current write buffer. It is up to the calling
  * code to ensure that this buffer is large enough for any write operations.
  */
-U8 *
+uint8_t *
 usart_get_write_buffer(usart *us)
 {
   if (us->dma->PDC_TNCR != 0) return NULL;
@@ -219,7 +218,7 @@ usart_get_write_buffer(usart *us)
  * Write len bytes from the current write write buffer.
  */
 void
-usart_write_buffer(usart *us, U32 len)
+usart_write_buffer(usart *us, uint32_t len)
 {
   AT91S_PDC *dma = us->dma;
   dma->PDC_TNPR = (unsigned int) us->out_buf[us->out_base];

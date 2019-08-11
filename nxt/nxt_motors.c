@@ -22,14 +22,14 @@
 static struct motor_struct {
   int current_count;
   int speed_percent;
-  U32 last;
+  uint32_t last;
 } motor[NXT_N_MOTORS];
 
-static U32 nxt_motor_initialised;
-static U32 interrupts_this_period;
+static uint32_t nxt_motor_initialised;
+static uint32_t interrupts_this_period;
 
 int
-nxt_motor_get_count(U32 n)
+nxt_motor_get_count(uint32_t n)
 {
   if (n < NXT_N_MOTORS)
     return motor[n].current_count;
@@ -38,14 +38,14 @@ nxt_motor_get_count(U32 n)
 }
 
 void
-nxt_motor_set_count(U32 n, int count)
+nxt_motor_set_count(uint32_t n, int count)
 {
   if (n < NXT_N_MOTORS)
     motor[n].current_count = count;
 }
 
 void
-nxt_motor_set_speed(U32 n, int speed_percent, int brake)
+nxt_motor_set_speed(uint32_t n, int speed_percent, int brake)
 {
   if (n < NXT_N_MOTORS) {
     if (speed_percent > 100)
@@ -81,7 +81,7 @@ nxt_motor_1kHz_process(void)
 #ifdef USE_FULL_DECODE
 /*
  * This table provides full quad decode giving 720 counts per rotation
-static const S8 quad_lookup[4][4] = 
+static const int8_t quad_lookup[4][4] = 
 */
   {{0, 1, -1, 0},
   {-1, 0, 0, 1},
@@ -91,7 +91,7 @@ static const S8 quad_lookup[4][4] =
 /*
  * This version provides half decode giving 360 counts per rotation
  */
-static const S8 quad_lookup[4][4] = 
+static const int8_t quad_lookup[4][4] = 
   {{0, 1, 0, -1},
   {-1, 0, 1, 0},
   {0, 1, 0, -1},
@@ -99,7 +99,7 @@ static const S8 quad_lookup[4][4] =
 #endif
 
 void
-nxt_motor_quad_decode(struct motor_struct *m, U32 value)
+nxt_motor_quad_decode(struct motor_struct *m, uint32_t value)
 {
   if (value != m->last)
   {
@@ -112,12 +112,12 @@ nxt_motor_quad_decode(struct motor_struct *m, U32 value)
 void
 nxt_motor_isr_C(void)
 {
-  U32 i_state = interrupts_get_and_disable();
+  uint32_t i_state = interrupts_get_and_disable();
 
   *AT91C_PIOA_ISR;	// Acknowledge change
-  U32 currentPins = *AT91C_PIOA_PDSR;	// Read pins
+  uint32_t currentPins = *AT91C_PIOA_PDSR;	// Read pins
 
-  U32 pins;
+  uint32_t pins;
 
   interrupts_this_period++;
   if (interrupts_this_period > 4) {
@@ -168,7 +168,7 @@ nxt_motor_init(void)
 #endif
 
   nxt_motor_initialised = 1;
-  U32 currentPins = *AT91C_PIOA_PDSR;	// Read pins
+  uint32_t currentPins = *AT91C_PIOA_PDSR;	// Read pins
   motor[0].last = ((currentPins >> MA0) & 1) | ((currentPins >> (MA1 - 1)) & 2);
   motor[1].last = ((currentPins >> MB0) & 1) | ((currentPins >> (MB1 - 1)) & 2);
   motor[2].last = ((currentPins >> MC0) & 1) | ((currentPins >> (MC1 - 1)) & 2);

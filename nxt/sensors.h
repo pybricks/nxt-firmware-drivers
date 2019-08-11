@@ -18,7 +18,7 @@
 typedef struct
 {
   int pins[2];
-  U32 ADCChan;
+  uint32_t ADCChan;
   AT91_REG * ADCData;
 } port_pins;
 

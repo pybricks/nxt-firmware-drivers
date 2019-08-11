@@ -6,7 +6,7 @@
 #define FLASH_TIMEOUT 20
 
 __ramfunc
-static U32 get_ms()
+static uint32_t get_ms()
 {
   /* Return a timer value in ms that can be used while interrupts are disabled
    * NOTE: This function must be here (rather then in systick), because it is

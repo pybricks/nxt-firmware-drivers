@@ -18,8 +18,8 @@ typedef unsigned int uint;
  * This is to allow fast dma update of the screen (see nxt_spi.c
  * for details).
  */
-U8 display[DISPLAY_DEPTH+1][DISPLAY_WIDTH];
-static U8 (*display_buffer)[DISPLAY_WIDTH] = display;
+uint8_t display[DISPLAY_DEPTH+1][DISPLAY_WIDTH];
+static uint8_t (*display_buffer)[DISPLAY_WIDTH] = display;
 
 /* Font table for a 5x8 font. 1 pixel spacing between chars */
 #define N_CHARS 128
@@ -28,7 +28,7 @@ static U8 (*display_buffer)[DISPLAY_WIDTH] = display;
 #define DISPLAY_CHAR_WIDTH (DISPLAY_WIDTH/(CELL_WIDTH))
 #define DISPLAY_CHAR_DEPTH (DISPLAY_DEPTH)
 
-static const U8 font_array[N_CHARS][FONT_WIDTH] = {
+static const uint8_t font_array[N_CHARS][FONT_WIDTH] = {
 /* 0x00 */ {0x3E, 0x36, 0x2A, 0x36, 0x3E},
 /* 0x01 */ {0x3E, 0x55, 0x61, 0x55, 0x3E},
 /* 0x02 */ {0x3E, 0x6B, 0x5F, 0x6B, 0x3E},
@@ -254,16 +254,16 @@ static const U8 font_array[N_CHARS][FONT_WIDTH] = {
 #endif
 /* 0x7F */ {0x55, 0xAA, 0x55, 0xAA, 0x55},
 };
-static const U8 (*font)[FONT_WIDTH] = font_array;
+static const uint8_t (*font)[FONT_WIDTH] = font_array;
 
-U32 display_update_time = 0;
-U32 display_update_complete_time = 0;
-U32 display_auto_update_period = DEFAULT_UPDATE_PERIOD;
+uint32_t display_update_time = 0;
+uint32_t display_update_complete_time = 0;
+uint32_t display_auto_update_period = DEFAULT_UPDATE_PERIOD;
 
 void
 display_update(void)
 {
-  U32 now = get_sys_time();
+  uint32_t now = get_sys_time();
   if (display_auto_update_period > 0)
     display_update_time = now + display_auto_update_period;
   nxt_lcd_update();
@@ -302,7 +302,7 @@ void display_force_update(void)
 
 
 void
-display_clear(U32 updateToo)
+display_clear(uint32_t updateToo)
 {
   //memset(display_buffer, 0, sizeof(display_buffer));
   memset(display_buffer, 0, DISPLAY_WIDTH*DISPLAY_DEPTH);
@@ -325,8 +325,8 @@ display_goto_xy(int x, int y)
 void
 display_char(int c)
 {
-  U8 *b;
-  const U8 *f, *fend;
+  uint8_t *b;
+  const uint8_t *f, *fend;
 
   if ((uint) c < N_CHARS &&
       (uint) display_x < DISPLAY_CHAR_WIDTH &&
@@ -360,7 +360,7 @@ display_string(const char *str)
 
 
 void
-display_hex(U32 val, U32 places)
+display_hex(uint32_t val, uint32_t places)
 {
   char x[9];
 
@@ -390,12 +390,12 @@ display_hex(U32 val, U32 places)
 }
 
 static void
-display_unsigned_worker(U32 val, U32 places, U32 sign)
+display_unsigned_worker(uint32_t val, uint32_t places, uint32_t sign)
 {
   char x[12];			// enough for 10 digits + sign + NULL 
   char *p = &x[11];
   int p_count = 0;
-  U32 val0;
+  uint32_t val0;
 
   *p = 0;
 
@@ -432,19 +432,19 @@ display_unsigned_worker(U32 val, U32 places, U32 sign)
 }
 
 void
-display_unsigned(U32 val, U32 places)
+display_unsigned(uint32_t val, uint32_t places)
 {
   display_unsigned_worker(val, places, 0);
 }
 
 void
-display_int(int val, U32 places)
+display_int(int val, uint32_t places)
 {
   display_unsigned_worker((val < 0) ? -val : val, places, (val < 0));
 }
 
 void
-display_bitmap_copy(const U8 *data, U32 width, U32 depth, U32 x, U32 y)
+display_bitmap_copy(const uint8_t *data, uint32_t width, uint32_t depth, uint32_t x, uint32_t y)
 {
   display_bitblt((byte *)data, width, depth*8, 0, 0, (byte *)display_buffer, DISPLAY_WIDTH, DISPLAY_DEPTH*8, x, y*8, width, depth*8, 0x0000ff00); 
 }
@@ -614,10 +614,10 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
   }
 }
 
-U8 *
+uint8_t *
 display_get_buffer(void)
 {
-  return (U8 *)display_buffer;
+  return (uint8_t *)display_buffer;
 }
 
 void
@@ -634,7 +634,7 @@ display_reset()
 void
 display_init(void)
 {
-  nxt_lcd_init((U8 *)display_buffer);
+  nxt_lcd_init((uint8_t *)display_buffer);
   display_reset();
 }
 

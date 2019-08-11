@@ -31,15 +31,15 @@
 
 #define CS_PIN	(1<<10)
 #define CD_PIN  (1<<12)
-const U8 *display = (U8 *) 0;
-volatile U8 dirty = 0;
-volatile U8 page = 0;
-volatile const U8 *data = (U8 *) 0;
-U8 mode = 0xff;
+const uint8_t *display = (uint8_t *) 0;
+volatile uint8_t dirty = 0;
+volatile uint8_t page = 0;
+volatile const uint8_t *data = (uint8_t *) 0;
+uint8_t mode = 0xff;
 
-static void spi_set_mode(U8 m)
+static void spi_set_mode(uint8_t m)
 {
-  U32 status;
+  uint32_t status;
 
   /* nothing to do if we are already in the correct mode */
   if (m == mode) return;
@@ -90,7 +90,7 @@ spi_isr_C(void)
    * we could just use a single dma transfer (instead of 8, 132 byte ones).
    * However I'm not sure if this would be safe.
    */
-  *AT91C_SPI_TNPR = (U32) data;
+  *AT91C_SPI_TNPR = (uint32_t) data;
   *AT91C_SPI_TNCR = 132;
   page = (page + 1) % 8;
   data += 100;
@@ -143,7 +143,7 @@ nxt_spi_init(void)
   mode = 0xff;
 
   /* Set up safe dma refresh state */
-  data = display = (U8 *) 0;
+  data = display = (uint8_t *) 0;
   dirty = 0;
   page = 0;
 
@@ -159,10 +159,10 @@ nxt_spi_init(void)
 }
 
 void
-nxt_spi_write(U32 CD, const U8 *data, U32 nBytes)
+nxt_spi_write(uint32_t CD, const uint8_t *data, uint32_t nBytes)
 {
-  U32 status;
-  U32 cd_mask = (CD ? 0x100 : 0);
+  uint32_t status;
+  uint32_t cd_mask = (CD ? 0x100 : 0);
 
   spi_set_mode(CD);
   while (nBytes) {
@@ -178,7 +178,7 @@ nxt_spi_write(U32 CD, const U8 *data, U32 nBytes)
 }
 
 void
-nxt_spi_set_display(const U8 *disp)
+nxt_spi_set_display(const uint8_t *disp)
 {
   /* Set the display buffer to be used for dma refresh.
    * it is really only safe to set the display once. Should probably

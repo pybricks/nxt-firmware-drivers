@@ -14,7 +14,6 @@
  * Serial Controller (SSC). This is capable of outputing a series of bits to
  * port at fixed intervals and is used to output the pdm audio.
  */
-#include "mytypes.h"
 #include "sound.h"
 #include "at91sam7.h"
 #include "aic.h"
@@ -63,36 +62,36 @@ enum {
   SOUND_MODE_PCM
 };
 
-U8 sound_mode = SOUND_MODE_NONE;
+uint8_t sound_mode = SOUND_MODE_NONE;
 
 struct {
   // pointer to the sample data
-  U8 *ptr;
+  uint8_t *ptr;
   // The number of hardware samples ahead
-  S32 count;
+  int32_t count;
   // Double buffer
-  U32 buf[2][PDM_BUFFER_LENGTH];
+  uint32_t buf[2][PDM_BUFFER_LENGTH];
   // Amplification LUT
-  S8 amp[257];
+  int8_t amp[257];
   // Ring buffer
-  U8 *sample_buf;
+  uint8_t *sample_buf;
   // Volume val used to create the amp LUT
-  S32 cur_vol;
+  int32_t cur_vol;
   // Clock divisor to use to play the sample
-  U32 clock_div;
+  uint32_t clock_div;
   // Current sample index
-  U32 out_index;
+  uint32_t out_index;
   // Place to add new samples
-  U32 in_index;
+  uint32_t in_index;
   // 0 or 1, identifies the current buffer
-  U8 buf_id;
+  uint8_t buf_id;
   // Size of the sample in 32 bit words
-  U8 len;
+  uint8_t len;
 } sample;
 
 #if (PDM_ENCODE == PDM_LOOKUP)
 // Lookup table for PDM encoding. Contains 0-32 evenly spaced set bits.
-const U32 sample_pattern[33] =
+const uint32_t sample_pattern[33] =
   {
     0x00000000, 0x80000000, 0x80008000, 0x80200400,
     0x80808080, 0x82081040, 0x84208420, 0x88442210,
@@ -142,7 +141,7 @@ const byte sine[] =  {0xc0, 0xc8, 0xd0, 0xd8, 0xe0, 0xea, 0xf4, 0xff, 0xff, 0xf0
 const byte logvol[] = {0, 8, 24, 40, 56, 80, 104, 128, 162, 196, 255, 255};
 
 
-static void sound_interrupt_enable(U32 typ)
+static void sound_interrupt_enable(uint32_t typ)
 {
   // Enable interrupt notification of either the end of the next buffer
   // or the end of all output. Having both enabled does not seem to work
@@ -214,7 +213,7 @@ void sound_reset()
   sample.sample_buf = NULL;
 }
 
-static void create_tone(const byte *lookup, int lulen, U32 *pat, int len)
+static void create_tone(const byte *lookup, int lulen, uint32_t *pat, int len)
 {
   // Fill the supplied buffer with len longs representing a pdm encoded
   // wave. We use a pre-generated lookup table for the wave shape.
@@ -224,14 +223,14 @@ static void create_tone(const byte *lookup, int lulen, U32 *pat, int len)
   int numsamples = len*32/2;
   int step = numsamples/lulen;
   int word = 0;
-  U32 bit = 0x80000000;
-  U32 bit2 = 0x00000001;
+  uint32_t bit = 0x80000000;
+  uint32_t bit2 = 0x00000001;
   int i = numsamples/step;;
   int error = 0;
   int error2 = 0;
   int out=0;
-  U32 bits = 0;
-  U32 bits2 = 0;
+  uint32_t bits = 0;
+  uint32_t bits2 = 0;
   int entry = 0;
   
   while (i-- > 0)
@@ -274,7 +273,7 @@ static void set_vol(int vol)
   // volume system mapped into a range of 0 to 120. 0 is muted, 100 is
   // full volume, 120 is driving into overload.
   int i;
-  S32 output;
+  int32_t output;
 
   // Get into range and use log conversion
   if (vol < 0) vol = 0;
@@ -287,7 +286,7 @@ static void set_vol(int vol)
   // Create the symmetric lookup table
   for(i = 0; i <= 128; i++)
   {
-    S32 a = (i*output)/128;
+    int32_t a = (i*output)/128;
     if (a > 127)
       a = 127;
     sample.amp[128-i] = -a; 
@@ -297,7 +296,7 @@ static void set_vol(int vol)
 }
 
 
-void sound_freq(U32 freq, U32 ms, int vol)
+void sound_freq(uint32_t freq, uint32_t ms, int vol)
 {
   // Set things up ready to go, note we avoid using anything that may
   // be used by the interupt routine because ints may still be enabled
@@ -330,7 +329,7 @@ void sound_freq(U32 freq, U32 ms, int vol)
   else
     sample.count = (freq*ms + 1000-1)/1000;
   sample.len = len;
-  sample.ptr = (U8 *)sample.buf[buf];
+  sample.ptr = (uint8_t *)sample.buf[buf];
   sample.buf_id = buf;
   *AT91C_SSC_PTCR = AT91C_PDC_TXTEN;
   sound_mode = SOUND_MODE_TONE;
@@ -341,18 +340,18 @@ void sound_freq(U32 freq, U32 ms, int vol)
 #if (PDM_ENCODE == PDM_LOOKUP)
 static void sound_fill_sample_buffer() {
   sample.buf_id ^= 1;
-  U32 *sbuf = sample.buf[sample.buf_id];
-  U8 *samples = sample.ptr;
-  U32 bufmask = (samples == sample.sample_buf ? SAMPLEBUFSZ-1 : 0xffffffff);
-  U32 out = sample.out_index;
-  U32 in = sample.in_index;
-  S8* amp = sample.amp;
-  U8 i;
+  uint32_t *sbuf = sample.buf[sample.buf_id];
+  uint8_t *samples = sample.ptr;
+  uint32_t bufmask = (samples == sample.sample_buf ? SAMPLEBUFSZ-1 : 0xffffffff);
+  uint32_t out = sample.out_index;
+  uint32_t in = sample.in_index;
+  int8_t* amp = sample.amp;
+  uint8_t i;
   /* Each 8-bit sample is turned into 8 32-bit numbers, i.e. 256 bits altogether */
   for (i = 0; i < PDM_BUFFER_LENGTH >> 3; i++) {
-    U8 smp;
-    U8 msk;
-    U8 s3;
+    uint8_t smp;
+    uint8_t msk;
+    uint8_t s3;
     if (out != in)
     {
       smp = amp[samples[out]] + 128;
@@ -371,8 +370,8 @@ static void sound_fill_sample_buffer() {
     *sbuf++ = sample_pattern[s3 + (msk & 1)];
     *sbuf++ = sample_pattern[s3];
     /*//An alternative that doesn't need a sample_pattern array:
-    U32 msb = 0xffffffff << (32 - (smp >> 3));
-    U32 lsb = msb | (msb >> 1);
+    uint32_t msb = 0xffffffff << (32 - (smp >> 3));
+    uint32_t lsb = msb | (msb >> 1);
     *sbuf++ = ((msk & 1) ? lsb : msb); msk >>= 1;
     *sbuf++ = ((msk & 1) ? lsb : msb); msk >>= 1;
     *sbuf++ = ((msk & 1) ? lsb : msb); msk >>= 1;
@@ -393,12 +392,12 @@ static void sound_fill_sample_buffer(){
   // problem we limit the accumlated error. In this case we limit the error
   // by using a simple mod operation.
   sample.buf_id ^= 1;
-  U32 *sbuf = sample.buf[sample.buf_id];
-  U8 *samples = sample.ptr;
-  U32 bufmask = (samples == sample.sample_buf ? SAMPLEBUFSZ-1 : 0xffffffff);
-  U32 out = sample.out_index;
-  U32 in = sample.in_index;
-  S8* amp = sample.amp;
+  uint32_t *sbuf = sample.buf[sample.buf_id];
+  uint8_t *samples = sample.ptr;
+  uint32_t bufmask = (samples == sample.sample_buf ? SAMPLEBUFSZ-1 : 0xffffffff);
+  uint32_t out = sample.out_index;
+  uint32_t in = sample.in_index;
+  int8_t* amp = sample.amp;
   int i;
   // Error accumulation terms
   static int e = 0;
@@ -413,8 +412,8 @@ static void sound_fill_sample_buffer(){
     else
       res = 0;
     // Perform sigma-delta conversion
-    U32 bits = 0;
-    U32 bit = 0x80000000;
+    uint32_t bits = 0;
+    uint32_t bit = 0x80000000;
     while (bit)
     {
       if (e2 >= 0)
@@ -437,15 +436,15 @@ static void sound_fill_sample_buffer(){
 #endif
 
 
-void sound_play_sample(U8 *data, U32 length, U32 freq, int vol)
+void sound_play_sample(uint8_t *data, uint32_t length, uint32_t freq, int vol)
 {
   // Play a series of PCM samples
-  if (data == (U8 *) 0 || length == 0) return;
+  if (data == (uint8_t *) 0 || length == 0) return;
   // Calculate the clock divisor based upon the recorded sample frequency */
   if (freq == 0) freq = DEFRATE;
   if (freq > MAXRATE) freq = MAXRATE;
   if (freq < MINRATE) freq = MINRATE;
-  U32 cdiv = (OSC/(2*SAMPBITS) + freq/2)/freq;
+  uint32_t cdiv = (OSC/(2*SAMPBITS) + freq/2)/freq;
   set_vol(vol);
   // Turn off ints while we update shared values
   sound_interrupt_disable();
@@ -461,7 +460,7 @@ void sound_play_sample(U8 *data, U32 length, U32 freq, int vol)
   *AT91C_SSC_PTCR = AT91C_PDC_TXTEN;
 }
 
-int sound_add_sample(U8 *data, U32 length, U32 freq, int vol)
+int sound_add_sample(uint8_t *data, uint32_t length, uint32_t freq, int vol)
 {
   // Add a set of samples into the playback queue, if not currently
   // playing start the playback process.
@@ -483,9 +482,9 @@ int sound_add_sample(U8 *data, U32 length, U32 freq, int vol)
   // Turn off ints while we update shared values
   sound_interrupt_disable();
   // add the data
-  U8 *sbuf = sample.ptr;
-  U32 in = sample.in_index;
-  U32 out = sample.out_index;
+  uint8_t *sbuf = sample.ptr;
+  uint32_t in = sample.in_index;
+  uint32_t out = sample.out_index;
   int cnt = (int) ((out - in - 1) & (SAMPLEBUFSZ - 1));
   if (cnt > length) cnt = length;
   length = cnt;
@@ -519,7 +518,7 @@ int sound_get_time()
 
 void sound_isr_C()
 {
-//U64 s = systick_get_ns();
+//uint64_t s = systick_get_ns();
     if (sample.count > 0)
     {
       // refill the buffer, and adjust any clocks

@@ -1,13 +1,13 @@
 #ifndef SOUND_H_
 #define SOUND_H_
 
-#include "mytypes.h"
+#include <stdint.h>
 
 void sound_init();
 
-void sound_freq(U32 freq, U32 ms, int vol);
-void sound_play_sample(U8 *data, U32 length, U32 freq, int vol);
-int sound_add_sample(U8 *data, U32 length, U32 freq, int vol);
+void sound_freq(uint32_t freq, uint32_t ms, int vol);
+void sound_play_sample(uint8_t *data, uint32_t length, uint32_t freq, int vol);
+int sound_add_sample(uint8_t *data, uint32_t length, uint32_t freq, int vol);
 void sound_set_volume(int vol);
 int sound_get_volume();
 int sound_get_time();

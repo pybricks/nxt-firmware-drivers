@@ -39,35 +39,35 @@ const char avr_brainwash_string[] =
 // order, packing etc. must match
 typedef struct{
   // Raw values
-  U8 power;
-  U8 pwm_frequency;
-  S8 output_percent[NXT_AVR_N_OUTPUTS];
-  U8 output_mode;
-  U8 input_power;
+  uint8_t power;
+  uint8_t pwm_frequency;
+  int8_t output_percent[NXT_AVR_N_OUTPUTS];
+  uint8_t output_mode;
+  uint8_t input_power;
 } __attribute__((packed)) to_avr;
 static to_avr io_to_avr;
 // Output data is double buffered via the following (note extra space for csum
-static U8 data_to_avr[5 + NXT_AVR_N_OUTPUTS];
+static uint8_t data_to_avr[5 + NXT_AVR_N_OUTPUTS];
 
 
 typedef struct {
   // Raw values
-  U16 adc_value[NXT_AVR_N_INPUTS];
-  U16 buttonsVal;
-  U16 extra;
-  U8 csum;
+  uint16_t adc_value[NXT_AVR_N_INPUTS];
+  uint16_t buttonsVal;
+  uint16_t extra;
+  uint8_t csum;
 } __attribute__((packed)) from_avr;
 static from_avr data_from_avr[2], *io_from_avr;
 // Input data is double buffered by buffer flipping
-static U32 from_buf;
+static uint32_t from_buf;
 #define NEXT_BUF() ((from_buf + 1) & 0x1)
 
 // 50ms Debounce time. Button read is called every other 1000Hz tick
 #define BUTTON_DEBOUNCE_CNT 50/2;
-static U16 prev_buttons;
-static U16 button_state;
-static U16 debounce_state;
-static U16 debounce_cnt;
+static uint16_t prev_buttons;
+static uint16_t button_state;
+static uint16_t debounce_state;
+static uint16_t debounce_cnt;
 
 
 
@@ -79,7 +79,7 @@ static void
 nxt_avr_start_read(void)
 {
   //memset(data_from_avr, 0, sizeof(data_from_avr));
-  twi_start_read(NXT_AVR_ADDRESS, (U8 *)(&data_from_avr[from_buf]), sizeof(from_avr));
+  twi_start_read(NXT_AVR_ADDRESS, (uint8_t *)(&data_from_avr[from_buf]), sizeof(from_avr));
 }
 
 /**
@@ -88,10 +88,10 @@ nxt_avr_start_read(void)
 static void
 nxt_avr_start_send(void)
 {
-  U32 checkByte = 0;
-  U8 *a = data_to_avr;
-  U8 *b = (U8 *) (&io_to_avr);
-  U8 *e = b + sizeof(io_to_avr);
+  uint32_t checkByte = 0;
+  uint8_t *a = data_to_avr;
+  uint8_t *b = (uint8_t *) (&io_to_avr);
+  uint8_t *e = b + sizeof(io_to_avr);
 
   // Copy over the data and create the checksum
   while (b < e) {
@@ -134,17 +134,17 @@ nxt_avr_firmware_update_mode(void)
 void
 nxt_avr_link_init(void)
 {
-  twi_start_write(NXT_AVR_ADDRESS, (const U8 *) avr_brainwash_string,
+  twi_start_write(NXT_AVR_ADDRESS, (const uint8_t *) avr_brainwash_string,
 		  strlen(avr_brainwash_string));
 }
 
 
 static struct {
-  U32 good_rx;
-  U32 bad_rx;
-  U32 resets;
-  U32 still_busy;
-  U32 not_ok;
+  uint32_t good_rx;
+  uint32_t bad_rx;
+  uint32_t resets;
+  uint32_t still_busy;
+  uint32_t not_ok;
 } nxt_avr_stats;
 
 /**
@@ -154,14 +154,14 @@ static struct {
 static void
 nxt_avr_unpack(void)
 {
-  U8 check_sum=0;;
-  U8 *p;
-  U8 *end;
-  U16 buttonsVal;
-  U16 newState;
+  uint8_t check_sum=0;;
+  uint8_t *p;
+  uint8_t *end;
+  uint16_t buttonsVal;
+  uint16_t newState;
 
   // calc the checksum
-  p = (U8 *) (&data_from_avr[from_buf]);
+  p = (uint8_t *) (&data_from_avr[from_buf]);
   end = p + sizeof(from_avr);
   while(p < end) {
     check_sum += *p++;
@@ -213,8 +213,8 @@ nxt_avr_unpack(void)
   }
 }
 
-static U32 update_count;
-static U32 link_state = LS_CLOSED;
+static uint32_t update_count;
+static uint32_t link_state = LS_CLOSED;
 
 /**
  * Set things up ready to start talking to the AVR.
@@ -304,7 +304,7 @@ nxt_avr_1kHz_update(void)
 /**
  * Return a bitmask giving the current (debounced) button state
  */
-U32
+uint32_t
 buttons_get(void)
 {
   return button_state;
@@ -314,9 +314,9 @@ buttons_get(void)
  * Event interface, check for change in button state. We support two
  * types of event. Button press and Button release. 
  */
-S32 buttons_check_event(S32 filter)
+int32_t buttons_check_event(int32_t filter)
 {
-  S32 ret = button_state;
+  int32_t ret = button_state;
   ret |= (~(button_state << 8) & 0xff00);
   return ret & filter;  
 }
@@ -325,13 +325,13 @@ S32 buttons_check_event(S32 filter)
 /**
  * Return the current state of the battery
  */
-U32
+uint32_t
 battery_voltage(void)
 {
   // Figure out voltage
   // The units are 13.848 mV per bit.
   // To prevent fp, we substitute 13.848 with 14180/1024
-  U32 voltageVal = io_from_avr->extra;
+  uint32_t voltageVal = io_from_avr->extra;
   voltageVal &= 0x3ff;		// Toss unwanted bits.
   voltageVal *= 14180;
   voltageVal >>= 10;
@@ -342,8 +342,8 @@ battery_voltage(void)
 /**
  * Return the requests sensor analoge reading.
  */
-U32
-sensor_adc(U32 n)
+uint32_t
+sensor_adc(uint32_t n)
 {
   if (n < 4)
     return io_from_avr->adc_value[n];
@@ -356,7 +356,7 @@ sensor_adc(U32 n)
  * Set the motor power for a particular motor
  */
 void
-nxt_avr_set_motor(U32 n, int power_percent, int brake)
+nxt_avr_set_motor(uint32_t n, int power_percent, int brake)
 {
   if (n < NXT_N_MOTORS) {
     io_to_avr.output_percent[n] = power_percent;
@@ -371,7 +371,7 @@ nxt_avr_set_motor(U32 n, int power_percent, int brake)
  * Control the power supplied to an input sensor
  */
 void
-nxt_avr_set_input_power(U32 n, U32 power_type)
+nxt_avr_set_input_power(uint32_t n, uint32_t power_type)
 {
   // The power to the sensor is controlled by a bit in
   // each of the two nibbles of the byte. There is one
@@ -384,7 +384,7 @@ nxt_avr_set_input_power(U32 n, U32 power_type)
   // clear then 9v is not supplied to the sensor. 
   // Having both bits set is currently not supported.
   if (n < NXT_AVR_N_INPUTS && power_type <= 2) {
-    U8 val = (power_type & 0x2 ? 0x10 << n : 0) | ((power_type & 1) << n);
+    uint8_t val = (power_type & 0x2 ? 0x10 << n : 0) | ((power_type & 1) << n);
     io_to_avr.input_power &= ~(0x11 << n);
     io_to_avr.input_power |= val;
   }

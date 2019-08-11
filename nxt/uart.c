@@ -1,5 +1,4 @@
 
-#include "mytypes.h"
 #include "uart.h"
 #include "interrupts.h"
 #include "at91sam7.h"
@@ -28,8 +27,8 @@ struct soft_uart {
 };
 
 #ifndef UART_POLLED
-static U8 tx_buffer[N_UARTS][TX_FIFO_SIZE];
-static U8 rx_buffer[N_UARTS][RX_FIFO_SIZE];
+static uint8_t tx_buffer[N_UARTS][TX_FIFO_SIZE];
+static uint8_t rx_buffer[N_UARTS][RX_FIFO_SIZE];
 #endif
 
 struct soft_uart uart[N_UARTS];
@@ -37,7 +36,7 @@ struct soft_uart uart[N_UARTS];
 
 
 int
-uart_get_byte(U32 u, U8 *b)
+uart_get_byte(uint32_t u, uint8_t *b)
 {
 
   int ret_val;
@@ -66,7 +65,7 @@ uart_get_byte(U32 u, U8 *b)
 }
 
 int
-uart_put_byte(U32 u, U8 b)
+uart_put_byte(uint32_t u, uint8_t b)
 {
   int ret_val;
   int i_state;
@@ -101,7 +100,7 @@ uart_put_byte(U32 u, U8 b)
 }
 
 void
-uart_put_str(U32 u, const U8 *str)
+uart_put_str(uint32_t u, const uint8_t *str)
 {
   while (*str) {
     while (!uart_put_byte(u, *str)) {
@@ -111,7 +110,7 @@ uart_put_str(U32 u, const U8 *str)
 }
 
 int
-uart_set_break(U32 u)
+uart_set_break(uint32_t u)
 {
   struct soft_uart *p;
   volatile struct _AT91S_USART *up;
@@ -128,7 +127,7 @@ uart_set_break(U32 u)
 }
 
 int
-uart_clear_break(U32 u)
+uart_clear_break(uint32_t u)
 {
   struct soft_uart *p;
   volatile struct _AT91S_USART *up;
@@ -147,13 +146,13 @@ uart_clear_break(U32 u)
 
 #ifndef UART_POLLED
 static void
-uart_process_isr(U32 u)
+uart_process_isr(uint32_t u)
 {
   struct soft_uart *p;
   volatile struct _AT91S_USART *up;
 
-  U8 status;
-  U8 b;
+  uint8_t status;
+  uint8_t b;
 
   if (u >= N_UARTS)
     return;
@@ -212,7 +211,7 @@ uart_calc_divisor(int baudRate)
 
 
 int
-uart_CheckBreak(U32 u)
+uart_CheckBreak(uint32_t u)
 {
 #if 0
   int isBreak;
@@ -240,17 +239,17 @@ uart_CheckBreak(U32 u)
 
 
 int
-uart_init(U32 u, U32 baudRate, U32 dataBits, U32 stopBits, char parity)
+uart_init(uint32_t u, uint32_t baudRate, uint32_t dataBits, uint32_t stopBits, char parity)
 {
 
   struct soft_uart *p = &uart[u];
   volatile struct _AT91S_USART *up;
   int i_state;
-  U32 peripheral_id;
-  U32 mode;
-  U8 dummy;
+  uint32_t peripheral_id;
+  uint32_t mode;
+  uint8_t dummy;
   void (*isr)(void);
-  U32 pinmask = 0;
+  uint32_t pinmask = 0;
   int error = 0;
 
   if (u >= N_UARTS)
@@ -375,7 +374,7 @@ uart_init(U32 u, U32 baudRate, U32 dataBits, U32 stopBits, char parity)
 }
 
 void
-uart_close(U32 u)
+uart_close(uint32_t u)
 {
   /* Nothing */
 }

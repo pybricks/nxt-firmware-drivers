@@ -1,7 +1,7 @@
 #ifndef HS_H_
 #define HS_H_
 
-#include "mytypes.h"
+#include <stdint.h>
 
 #define   HS_RX_PIN  AT91C_PIO_PA5
 #define   HS_TX_PIN  AT91C_PIO_PA6
@@ -10,11 +10,11 @@
 void hs_init(void);
 int hs_enable(int baud, int buf_sz);
 void hs_disable(void);
-U32 hs_write(U8 *buf, U32 off, U32 len);
-U32 hs_read(U8 * buf, U32 off, U32 len);
-U32 hs_pending(void);
+uint32_t hs_write(uint8_t *buf, uint32_t off, uint32_t len);
+uint32_t hs_read(uint8_t * buf, uint32_t off, uint32_t len);
+uint32_t hs_pending(void);
 
-int hs_send(U8 address, U8 control, U8 *data, int offset, int len, U16 *CRCTab);
-int hs_recv(U8 *data, int len, U16 *CRCTab, int reset);
+int hs_send(uint8_t address, uint8_t control, uint8_t *data, int offset, int len, uint16_t *CRCTab);
+int hs_recv(uint8_t *data, int len, uint16_t *CRCTab, int reset);
 
 #endif /*HS_H_*/

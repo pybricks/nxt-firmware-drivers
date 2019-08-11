@@ -13,7 +13,6 @@
  * firmware).
  */
 #include "types.h"
-#include "mytypes.h"
 #include "irq.h"
 #include "udp.h"
 #include "interrupts.h"
@@ -98,16 +97,16 @@
 #define ENTER() (*AT91C_UDP_IDR = (AT91C_UDP_EPINT0 | AT91C_UDP_RXSUSP | AT91C_UDP_RXRSM))
 #define LEAVE() (*AT91C_UDP_IER = (AT91C_UDP_EPINT0 | AT91C_UDP_RXSUSP | AT91C_UDP_RXRSM))
 
-static U8 currentConfig;
-static U32 currentFeatures;
+static uint8_t currentConfig;
+static uint32_t currentFeatures;
 static unsigned currentRxBank;
 static int configured = (ST_DISABLED|ST_NEEDRESET);
 static int newAddress;
-static U8 *outPtr;
-static U32 outCnt;
-static U8 delayedEnable = 0;
+static uint8_t *outPtr;
+static uint32_t outCnt;
+static uint8_t delayedEnable = 0;
 #if REMOTE_CONSOLE
-static U8 rConsole = 0;
+static uint8_t rConsole = 0;
 #endif
 
 static const usb_device_descriptor_t dd = {
@@ -265,7 +264,7 @@ force_reset()
 }
 
 int
-udp_read(U8* buf, int off, int len)
+udp_read(uint8_t* buf, int off, int len)
 {
   /* Perform a non-blocking read operation. We use double buffering (ping-pong)
    * operation to provide better throughput.
@@ -309,7 +308,7 @@ udp_read(U8* buf, int off, int len)
 }
 
 int
-udp_write(U8* buf, int off, int len)
+udp_write(uint8_t* buf, int off, int len)
 {
   /* Perform a non-blocking write. Return the number of bytes actually
    * written.
@@ -342,7 +341,7 @@ static void udp_send_stall()
   UDP_SETEPFLAGS(*AT91C_UDP_CSR0, AT91C_UDP_FORCESTALL); 
 }
 
-static void udp_send_control(U8* p, int len)
+static void udp_send_control(uint8_t* p, int len)
 {
   outPtr = p;
   outCnt = len;
@@ -375,7 +374,7 @@ static
 void 
 udp_enumerate()
 {
-  U8 bt, br;
+  uint8_t bt, br;
   int req, len, ind, val; 
   short status;
     //display_goto_xy(8,3);
@@ -472,11 +471,11 @@ udp_enumerate()
     case STD_GET_DESCRIPTOR: 
       if (val == 0x100) // Get device descriptor
       {
-        udp_send_control((U8 *)&dd, MIN(sizeof(dd), len));
+        udp_send_control((uint8_t *)&dd, MIN(sizeof(dd), len));
       }
       else if (val == 0x200) // Configuration descriptor
       {     
-        udp_send_control((U8 *)&cfd, MIN(sizeof(cfd), len));
+        udp_send_control((uint8_t *)&cfd, MIN(sizeof(cfd), len));
         //if (len > sizeof(cfd)) udp_send_null();
       }    
       else if ((val & 0xF00) == 0x300)
@@ -484,10 +483,10 @@ udp_enumerate()
         switch(val & 0xFF)
         {
           case 0x00:
-            udp_send_control((U8 *)&ld, MIN(sizeof(ld), len));
+            udp_send_control((uint8_t *)&ld, MIN(sizeof(ld), len));
             break;
           case 0x01:
-            udp_send_control((U8 *)&snd, MIN(sizeof(snd), len));
+            udp_send_control((uint8_t *)&snd, MIN(sizeof(snd), len));
             break;
           default:
             udp_send_stall();
@@ -608,17 +607,17 @@ udp_enumerate()
       break;
       
     case STD_GET_CONFIGURATION:                                   
-      udp_send_control((U8 *) &(currentConfig), MIN(sizeof(currentConfig), len));
+      udp_send_control((uint8_t *) &(currentConfig), MIN(sizeof(currentConfig), len));
       break;
 
     case STD_GET_STATUS_ZERO:
       status = 0x01; 
-      udp_send_control((U8 *) &status, MIN(sizeof(status), len));
+      udp_send_control((uint8_t *) &status, MIN(sizeof(status), len));
       break;
       
     case STD_GET_STATUS_INTERFACE:
       status = 0;
-      udp_send_control((U8 *) &status, MIN(sizeof(status), len));
+      udp_send_control((uint8_t *) &status, MIN(sizeof(status), len));
       break;
 
     case STD_GET_STATUS_ENDPOINT:
@@ -639,12 +638,12 @@ udp_enumerate()
             status = ((*AT91C_UDP_CSR3) & AT91C_UDP_FORCESTALL) ? 1 : 0; 
             break;
         }
-        udp_send_control((U8 *) &status, MIN(sizeof(status), len));
+        udp_send_control((uint8_t *) &status, MIN(sizeof(status), len));
       }
       else if (((*AT91C_UDP_GLBSTATE) & AT91C_UDP_FADDEN) && (ind == 0))
       {
         status = ((*AT91C_UDP_CSR0) & AT91C_UDP_EPEDS) ? 0 : 1;
-        udp_send_control((U8 *) &status, MIN(sizeof(status), len));
+        udp_send_control((uint8_t *) &status, MIN(sizeof(status), len));
       }
       else udp_send_stall();                                // Illegal request :-(
 
@@ -661,7 +660,7 @@ udp_enumerate()
       udp_send_null();
       break;
     case VENDOR_GET_DESCRIPTOR:
-      udp_send_control((U8 *)&named, MIN(named.bLength, len));
+      udp_send_control((uint8_t *)&named, MIN(named.bLength, len));
       break;
  
     case STD_SET_FEATURE_INTERFACE:
@@ -685,7 +684,7 @@ udp_isr_C(void)
    * enumeration stages.
    */
 /*
-static U32 intCnt = 0;
+static uint32_t intCnt = 0;
 display_goto_xy(0,3);
 display_hex(*AT91C_UDP_ISR, 4);
 display_goto_xy(4,3);
@@ -745,10 +744,10 @@ display_hex(intCnt++, 4);*/
     //display_string("IE2");
 }
 
-S32 udp_event_check(S32 filter)
+int32_t udp_event_check(int32_t filter)
 {
   // Return the current event state.
-  S32 ret = 0;
+  int32_t ret = 0;
   if (configured == ST_CONFIGURED)
   {
     ret |= USB_CONFIGURED;
@@ -800,7 +799,7 @@ void
 udp_disable()
 {
   /* Disable processing of USB requests */
-  U8 buf[MAX_BUF];
+  uint8_t buf[MAX_BUF];
   // Stall the endpoints, note we can not reset them at this point as this
   // will screw up the data toggle and result in lost data.
   if (configured & ST_CONFIGURED)
@@ -821,7 +820,7 @@ udp_disable()
 }
 
 void
-udp_set_serialno(U8 *serNo, int len)
+udp_set_serialno(uint8_t *serNo, int len)
 {
   /* Set the USB serial number. serNo should point to a 12 character
    * Unicode string, containing the USB serial number.
@@ -831,7 +830,7 @@ udp_set_serialno(U8 *serNo, int len)
 }
 
 void
-udp_set_name(U8 *name, int len)
+udp_set_name(uint8_t *name, int len)
 {
   if (2 * len <= sizeof(named.data))
   {
@@ -866,7 +865,7 @@ udp_reset(void)
 
 #if REMOTE_CONSOLE
 void
-udp_rconsole(U8 *buf, int cnt)
+udp_rconsole(uint8_t *buf, int cnt)
 {
   if (!rConsole) return;
   while (udp_write(buf, 0, cnt) == 0)

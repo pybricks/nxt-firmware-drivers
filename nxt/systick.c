@@ -2,7 +2,7 @@
 /*
  *  This provides a 1000Hz tick for the system.
  *
- *  NB At 1000Hz, a U32 will roll over in approx 50 days.
+ *  NB At 1000Hz, a uint32_t will roll over in approx 50 days.
  *  Therefore a todo to get rid of this at some stage.
  *
  *  We're using TC0
@@ -26,7 +26,7 @@ extern const int * forceswitch;
 
 #define LOW_PRIORITY_IRQ 10
 
-static volatile U32 systick_ms;
+static volatile uint32_t systick_ms;
 
 // Systick low priority
 void
@@ -41,7 +41,7 @@ systick_low_priority_C(void)
 void
 systick_isr_C(void)
 {
-  U32 status;
+  uint32_t status;
 
   // Read status to confirm interrupt 
   status = *AT91C_PITC_PIVR;
@@ -56,7 +56,7 @@ systick_isr_C(void)
  * Return the system elapse time in milliseconds.
  * NOTE This time is not updated if the timer interrupt is disabled.
  */
-U32
+uint32_t
 systick_get_ms(void)
 {
   // We're using a 32-bitter and can assume that we
@@ -64,12 +64,12 @@ systick_get_ms(void)
   return systick_ms;
 }
 
-U64
+uint64_t
 systick_get_ns(void)
 {
-  U32 ms;
-  U32 piir;
-  U32 ns;
+  uint32_t ms;
+  uint32_t piir;
+  uint32_t ns;
 
   do {
     ms = systick_ms;
@@ -79,14 +79,14 @@ systick_get_ns(void)
   ms += (piir  >> 20);
   // get us
   ns = ((piir & AT91C_PITC_CPIV)*1000)/(CLOCK_FREQUENCY/16/1000000);
-  return (U64)ms*1000000 + ns;
+  return (uint64_t)ms*1000000 + ns;
 }
 
 
 void
-systick_wait_ms(U32 ms)
+systick_wait_ms(uint32_t ms)
 {
-  volatile U32 final = ms + systick_ms;
+  volatile uint32_t final = ms + systick_ms;
 
   while (systick_ms < final) {
   }
@@ -94,9 +94,9 @@ systick_wait_ms(U32 ms)
 
 
 void
-systick_wait_ns(U32 ns)
+systick_wait_ns(uint32_t ns)
 {
-  volatile U32 x = (ns >> 7) + 1;
+  volatile uint32_t x = (ns >> 7) + 1;
 
   while (x) {
     x--;
@@ -125,7 +125,7 @@ systick_init(void)
 }
 
 #if 0
-static U32 test_counter;
+static uint32_t test_counter;
 void
 systick_test(void)
 {

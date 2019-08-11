@@ -15,7 +15,6 @@
 #include "platform_config.h"
 
 #include "types.h"
-#include "mytypes.h"
 #include "stack.h"
 #include "threads.h"
 #include "classes.h"
@@ -105,7 +104,7 @@ sp_check_event(int filter)
   for(port = 0; port < N_SENSORS; port++, bit <<= 1)
     if (filter & bit)
     {
-      U16 val = sensor_adc(port);
+      uint16_t val = sensor_adc(port);
       if ((filter & bit & GT_EVENTS) && (val > (target + tolerance)))
         changed |= (bit & GT_EVENTS);
       if ((filter & bit & LT_EVENTS) && (val < (target - tolerance)))
