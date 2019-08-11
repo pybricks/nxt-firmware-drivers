@@ -19,9 +19,9 @@
 #include "aic.h"
 #include "nxt_avr.h"
 #include <string.h>
+#include <stdlib.h>
 #include "display.h"
 #include "systick.h"
-#include "memory.h"
 #include "rconsole.h"
 #include "irq.h"
 
@@ -470,7 +470,7 @@ int sound_add_sample(uint8_t *data, uint32_t length, uint32_t freq, int vol)
   {
     if (sample.sample_buf == NULL)
     {
-      sample.sample_buf = system_allocate(SAMPLEBUFSZ);
+      sample.sample_buf = malloc(SAMPLEBUFSZ);
       if (sample.sample_buf == NULL) return -1;
     }
     if (length > SAMPLEBUFSZ - 1) length = SAMPLEBUFSZ - 1;

@@ -9,9 +9,9 @@
 #include "hs.h"
 #include "aic.h"
 #include  <string.h>
+#include <stdlib.h>
 #include "display.h"
 #include "systick.h"
-#include "memory.h"
 #include "sensors.h"
 #include "usart.h"
 

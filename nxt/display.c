@@ -2,7 +2,8 @@
 #include "nxt_lcd.h"
 #include "systick.h"
 #include "constants.h"
-#include "memory.h"
+#include <stdlib.h>
+#include "types.h"
 #include "nxt_spi.h"
 #include <string.h>
 

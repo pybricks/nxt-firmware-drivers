@@ -10,9 +10,9 @@
 #include "irq.h"
 #include "aic.h"
 #include "systick.h"
-#include "memory.h"
 #include "sensors.h"
 #include <string.h>
+#include <stdlib.h>
 //Sizes etc.
 #define I2C_CLOCK 9600
 #define I2C_HS_CLOCK 125000
@@ -573,7 +573,7 @@ int i2c_enable(int port, int mode)
     // Allocate memory if required
     if (!p)
     {
-      p = (i2c_port *) system_allocate(sizeof(i2c_port));
+      p = (i2c_port *) malloc(sizeof(i2c_port));
       if (!p) return 0;
       i2c_ports[port] = p;
     }

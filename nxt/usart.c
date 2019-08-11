@@ -6,10 +6,10 @@
 #include "at91sam7.h"
 #include "hs.h"
 #include "aic.h"
-#include  <string.h>
+#include <string.h>
+#include <stdlib.h>
 #include "display.h"
 #include "systick.h"
-#include "memory.h"
 #include "sensors.h"
 #include "usart.h"
 
@@ -22,7 +22,7 @@ usart_allocate(AT91S_USART *dev, AT91S_PDC *dma, int inSz, int outSz)
 {
   usart *us;
   // do memory allocation for buffer space
-  uint8_t *mem = system_allocate(sizeof(usart) + inSz*BUF_CNT + outSz*BUF_CNT);
+  uint8_t *mem = malloc(sizeof(usart) + inSz*BUF_CNT + outSz*BUF_CNT);
   if (mem == NULL) return NULL;
   us = (usart *) mem;
   us->dma = dma;
