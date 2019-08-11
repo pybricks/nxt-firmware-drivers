@@ -7,7 +7,6 @@
 #include "types.h"
 #include "classes.h"
 #include "language.h"
-#include "interpreter.h"
 
 #include "poll.h"
 #include "display.h"

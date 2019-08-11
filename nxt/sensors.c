@@ -15,8 +15,6 @@
 #include "platform_config.h"
 
 #include "types.h"
-#include "stack.h"
-#include "threads.h"
 #include "classes.h"
 #include "language.h"
 #include "at91sam7.h"

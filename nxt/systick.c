@@ -16,7 +16,6 @@
 
 #include "nxt_motors.h"
 #include "nxt_avr.h"
-#include "interpreter.h"
 
 extern volatile unsigned char gMakeRequest;
 extern const int * volatile disptab;
