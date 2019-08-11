@@ -18,8 +18,10 @@ typedef unsigned int uint;
  * This is to allow fast dma update of the screen (see nxt_spi.c
  * for details).
  */
-uint8_t display[DISPLAY_DEPTH+1][DISPLAY_WIDTH];
-static uint8_t (*display_buffer)[DISPLAY_WIDTH] = display;
+static struct {
+  uint8_t display[DISPLAY_DEPTH+1][DISPLAY_WIDTH];
+} display_array;
+static uint8_t (*display_buffer)[DISPLAY_WIDTH] = display_array.display;
 
 /* Font table for a 5x8 font. 1 pixel spacing between chars */
 #define N_CHARS 128
@@ -28,7 +30,9 @@ static uint8_t (*display_buffer)[DISPLAY_WIDTH] = display;
 #define DISPLAY_CHAR_WIDTH (DISPLAY_WIDTH/(CELL_WIDTH))
 #define DISPLAY_CHAR_DEPTH (DISPLAY_DEPTH)
 
-static const uint8_t font_array[N_CHARS][FONT_WIDTH] = {
+static const struct {
+  uint8_t font[N_CHARS][FONT_WIDTH];
+} font_array = {{
 /* 0x00 */ {0x3E, 0x36, 0x2A, 0x36, 0x3E},
 /* 0x01 */ {0x3E, 0x55, 0x61, 0x55, 0x3E},
 /* 0x02 */ {0x3E, 0x6B, 0x5F, 0x6B, 0x3E},
@@ -253,8 +257,8 @@ static const uint8_t font_array[N_CHARS][FONT_WIDTH] = {
 /* 0x7E */ {0x08, 0x06, 0x08, 0x30, 0x08},
 #endif
 /* 0x7F */ {0x55, 0xAA, 0x55, 0xAA, 0x55},
-};
-static const uint8_t (*font)[FONT_WIDTH] = font_array;
+}};
+static const uint8_t (*font)[FONT_WIDTH] = font_array.font;
 
 uint32_t display_update_time = 0;
 uint32_t display_update_complete_time = 0;
