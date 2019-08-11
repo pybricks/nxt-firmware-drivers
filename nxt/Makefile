@@ -23,22 +23,18 @@ CFLAGS = $(BASE_ABI_FLAGS) -mthumb \
 LDFLAGS = $(LIB_ABI_FLAGS) -nostdlib -nodefaultlibs -Wl,-cref,--gc-sections
 
 ALL_BIN := $(TARGETS)
-ALL_HEAD := $(VM_DIR)/specialclasses.h $(VM_DIR)/specialsignatures.h
 ALL_OBJECTS := $(C_OBJECTS) $(S_OBJECTS)
 ALL_ELF := $(ALL_BIN:.bin=.elf)
 ALL_MAP := $(ALL_BIN:.bin=.map)
 ALL_ASM := $(ALL_BIN:.bin=.asm) $(ALL_OBJECTS:.o=.asm)
 
-.SECONDARY: $(ALL_ELF) $(ALL_MAP) $(ALL_OBJECTS) $(ALL_HEAD)
+.SECONDARY: $(ALL_ELF) $(ALL_MAP) $(ALL_OBJECTS)
 
 .PHONY: all
 all:  BuildMessage $(TARGET)
 
 .PHONY: everything
 everything: BuildMessage $(ALL_BIN) $(ALL_ASM)
-
-.PHONY: header
-header: $(ALL_HEAD)
 
 .PHONY: TargetMessage
 TargetMessage:
@@ -65,8 +61,6 @@ clean:
 	@rm -f $(ALL_MAP)
 	@echo "Removing asm files"
 	@rm -f $(ALL_ASM)
-	@echo "Removing generated headers"
-	@rm -f $(ALL_HEAD)
 
 %.elf: %.lds $(C_OBJECTS) $(S_OBJECTS)
 	@echo "### Linking $@ using linker script $<"
@@ -79,35 +73,24 @@ clean:
 	@echo "### Generating binary file $@ from $<"
 	$(OBJCOPY) -O binary $< $@
 
-# generated headers:
-
-$(VM_DIR)/specialclasses.h: $(VM_DIR)/specialclasses.db
-	@echo "### Generating header file $@ from $<"
-	$(VM_DIR)/dbtoh.sh class $< $@ 
-
-$(VM_DIR)/specialsignatures.h: $(VM_DIR)/specialsignatures.db
-	@echo "### Generating header file $@ from $<"
-	$(VM_DIR)/dbtoh.sh signature $< $@ 
-
-
 # default rules for compiling sources
 
 %.o: %.S
 	@echo "### Assembling $< to $@"
 	$(CC) $(CFLAGS) -c -o $@ $< 
 
-%.o: %.c $(ALL_HEAD)
+%.o: %.c
 	@echo "### Compiling $< to $@"
 	$(CC) $(CFLAGS) -c -o $@ $< 
 
 
 ### special rules for compiling JVM sources
 
-$(VM_PREFIX)%.o: $(VM_DIR)/%.c $(ALL_HEAD)
+$(VM_PREFIX)%.o: $(VM_DIR)/%.c
 	@echo "### Compiling $< to $@"
 	$(CC) $(CFLAGS) -c -o $@ $< 
 
-$(VM_PREFIX)interpreter.o: $(VM_DIR)/interpreter.c $(ALL_HEAD)
+$(VM_PREFIX)interpreter.o: $(VM_DIR)/interpreter.c
 	@echo "### Compiling $< to $@"
 	$(CC) $(CFLAGS) -O3 -c -o $@ $< 
 

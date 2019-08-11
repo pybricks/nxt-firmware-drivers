@@ -2,8 +2,6 @@
 *.bin
 *.elf
 *.map
-specialclasses.h
-specialsignatures.h
 build/
 *.mpy
 

@@ -2,7 +2,6 @@
 #include "nxt_lcd.h"
 #include "systick.h"
 #include "constants.h"
-#include "specialclasses.h"
 #include "classes.h"
 #include "memory.h"
 #include "nxt_spi.h"
