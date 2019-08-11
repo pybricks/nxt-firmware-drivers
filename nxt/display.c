@@ -520,7 +520,7 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
   byte cx1 = (byte)(rop >> 16);
   byte ca2 = (byte)(rop >> 8);
   byte cx2 = (byte) rop;
-  boolean noDst = (ca1 == 0 && cx1 == 0);
+  unsigned char noDst = (ca1 == 0 && cx1 == 0);
   int xcnt;
   // Check for byte aligned case and optimise for it
   if (h >= 8 && inStartBit == firstBit && outStartBit == firstBit)

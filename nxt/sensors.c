@@ -16,7 +16,6 @@
 
 #include "types.h"
 #include "classes.h"
-#include "language.h"
 #include "at91sam7.h"
 #include "sensors.h"
 #include "nxt_avr.h"
