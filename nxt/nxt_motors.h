@@ -1,7 +1,7 @@
 #ifndef __NXT_MOTORS_H__
-#  define __NXT_MOTORS_H__
+#define __NXT_MOTORS_H__
 
-#  define NXT_N_MOTORS 3
+#define NXT_N_MOTORS 3
 
 #include <stdint.h>
 

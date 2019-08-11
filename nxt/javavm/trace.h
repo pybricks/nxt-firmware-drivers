@@ -73,27 +73,27 @@ extern void assert_hook (boolean aCond, int aCode);
 #endif
 
 #ifndef DEBUG_EXCEPTIONS
-# define DEBUG_EXCEPTIONS 0
+#define DEBUG_EXCEPTIONS 0
 #endif
 
 #ifndef DEBUG_MONITOR
-# define DEBUG_MONITOR 0
+#define DEBUG_MONITOR 0
 #endif
 
 #ifndef DEBUG_METHODS
-# define DEBUG_METHODS 0
+#define DEBUG_METHODS 0
 #endif
 
 #ifndef DEBUG_BYTECODE
-# define DEBUG_BYTECODE 0
+#define DEBUG_BYTECODE 0
 #endif
 
 #ifndef DEBUG_THREADS
-# define DEBUG_THREADS  0
+#define DEBUG_THREADS  0
 #endif
 
 #ifndef DEBUG_MEMORY
-# define DEBUG_MEMORY  0
+#define DEBUG_MEMORY  0
 #endif
 
 #if DEBUG_RCX

@@ -1,9 +1,9 @@
 #ifndef _SENSORS_H
 #include "at91sam7s256.h"
-#  define _SENSORS_H
+#define _SENSORS_H
 
-#  define N_SENSORS (4)
-#  define RS485_PORT (3)
+#define N_SENSORS (4)
+#define RS485_PORT (3)
 
 // Sensor port pin modes
 #define SP_MODE_OFF 0

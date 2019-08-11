@@ -1,5 +1,5 @@
 #ifndef __AT91_UART_H__
-#  define __AT91_UART_H__
+#define __AT91_UART_H__
 
 #include <stdint.h>
 

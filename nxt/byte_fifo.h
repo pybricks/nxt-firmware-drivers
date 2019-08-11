@@ -5,7 +5,7 @@
  */
 
 #ifndef __BFIFO_H__
-#  define __BFIFO_H__
+#define __BFIFO_H__
 
 #include <stdint.h>
 

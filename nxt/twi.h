@@ -1,5 +1,5 @@
 #ifndef __AT91_TWI_H__
-#  define __AT91_TWI_H__
+#define __AT91_TWI_H__
 
 #include <stdint.h>
 

@@ -90,7 +90,7 @@ uart_put_byte(uint32_t u, uint8_t b)
   p->transmitting = 1;
   up->US_IER = 0x02;
 #else
-#  warning Polled UART not supported!
+#warning Polled UART not supported!
 #endif
 
   if (i_state)

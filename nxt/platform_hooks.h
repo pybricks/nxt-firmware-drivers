@@ -1,16 +1,16 @@
 #ifndef _PLATFORM_HOOKS_H
-#  define _PLATFORM_HOOKS_H
+#define _PLATFORM_HOOKS_H
 
 // Methods declared here must be implemented by
 // each platform.
 
-#  include "types.h"
-#  include "classes.h"
-#  include "language.h"
-#  include "interpreter.h"
+#include "types.h"
+#include "classes.h"
+#include "language.h"
+#include "interpreter.h"
 
-#  include "poll.h"
-#  include "display.h"
+#include "poll.h"
+#include "display.h"
 #include "at91sam7.h"
 
 static inline void

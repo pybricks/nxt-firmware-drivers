@@ -1,5 +1,5 @@
 #ifndef __NXT_SPI_H__
-#  define __NXT_SPI_H__
+#define __NXT_SPI_H__
 
 #include <stdint.h>
 

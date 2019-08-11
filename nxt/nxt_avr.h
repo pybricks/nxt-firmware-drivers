@@ -1,5 +1,5 @@
 #ifndef __NXT_AVR_H__
-#  define __NXT_AVR_H__
+#define __NXT_AVR_H__
 
 #include <stdint.h>
 

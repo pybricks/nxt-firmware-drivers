@@ -1,7 +1,7 @@
 #ifndef __DISPLAY_H__
-#  define __DISPLAY_H__
-#  include "platform_config.h"
-#  include "classes.h"
+#define __DISPLAY_H__
+#include "platform_config.h"
+#include "classes.h"
 
 void display_init(void);
 
