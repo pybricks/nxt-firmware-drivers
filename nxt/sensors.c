@@ -19,7 +19,6 @@
 #include "language.h"
 #include "at91sam7.h"
 #include "sensors.h"
-#include "poll.h"
 #include "nxt_avr.h"
 
 // Sensor port digital pins

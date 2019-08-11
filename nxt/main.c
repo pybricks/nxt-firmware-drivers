@@ -23,7 +23,7 @@
 #include "udp.h"
 #include "flashprog.h"
 #include "hs.h"
-#include "debug.h"
+#include "constants.h"
 
 #include <string.h>
 

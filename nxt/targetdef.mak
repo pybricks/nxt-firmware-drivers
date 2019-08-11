@@ -35,8 +35,7 @@ C_HOOK_OBJECTS := \
 	main.o \
 	nxt_avr.o \
 	sensors.o \
-	nxt_lcd.o \
-	platform_hooks.o
+	nxt_lcd.o
 
 C_OBJECTS := \
 	$(C_PLATFORM_OBJECTS) \
