@@ -36,8 +36,9 @@ global_data_label menu_address
 global_data_label menu_length
 	.ascii "MNUL"
 global_data_label flash_start_page
-	.ascii "FLSP"
-
+	fwsize = 200*1024 @ Allow FW up to 200K with 56K user flash. TODO: Make configurable and check for size
+	pagesize = 256
+	.long fwsize/pagesize
 
 	.section .stack, "aw"
 	.space 0x80

@@ -64,6 +64,37 @@ int nxt_main() {
 }
 
 void device_test(void) {
+
+    unsigned long contents[64];
+
+    display_goto_xy(0, 0);
+    display_string("Test flash");
+
+    int page = 1;
+    if (flash_get_page_buffer(page) == NULL) {
+        display_string("BAD PAGE");
+    }
+    else {
+        // Read 4 x 4 bytes, increment and flash back
+        flash_read_page(contents, page);
+        for (int i = 0; i < 4; i++) {
+            display_goto_xy(0, i+1);
+            display_unsigned(contents[i], 4);
+            contents[i] = contents[i] > 15 ? i : contents[i] + 1;
+        }
+        int res = flash_write_page(contents, page);
+        display_update();
+
+        // Display results and start page
+        display_goto_xy(0, 5);
+        display_int(res, 4);
+        display_goto_xy(0, 6);
+        display_unsigned(flash_start_page, 8);
+    }
+
+    
+    systick_wait_ms(1000);
+
     int iterator = 0;
     uint32_t buttons;
     uint32_t motor_mode = 0;
