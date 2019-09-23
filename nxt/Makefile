@@ -4,7 +4,6 @@ default: all
 
 include environment.mak
 include targetdef.mak
-include version.mak
 
 C_OPTIMISATION_FLAGS = -Os
 #C_OPTIMISATION_FLAGS = -Os -Xassembler -aslh
@@ -17,8 +16,7 @@ CFLAGS = $(BASE_ABI_FLAGS) -mthumb \
 	$(C_OPTIMISATION_FLAGS) -g \
 	-Wall -Winline -Werror-implicit-function-declaration \
 	-I. -I$(VM_DIR) \
-	-ffunction-sections -fdata-sections \
-	-DSVN_REV=$(SVN_REV) -DVERSION_NUMBER=$(VERSION_NUMBER)
+	-ffunction-sections -fdata-sections
 
 LDFLAGS = $(LIB_ABI_FLAGS) -nostdlib -nodefaultlibs -Wl,-cref,--gc-sections
 
