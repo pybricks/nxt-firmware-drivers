@@ -33,6 +33,7 @@ C_PLATFORM_OBJECTS := \
 
 C_HOOK_OBJECTS := \
 	main.o \
+	maininit.o \
 	nxt_avr.o \
 	sensors.o \
 	nxt_lcd.o

@@ -24,44 +24,10 @@
 #include "flashprog.h"
 #include "hs.h"
 
+#include "maininit.h"
+
 #include <string.h>
 
-void shutdown(int update_mode) {
-    nxt_lcd_enable(0);
-    for(;;) {
-        if (update_mode) {
-            nxt_avr_firmware_update_mode();
-        }
-        else {
-            nxt_avr_power_down();
-        }
-    }
-}
-
-
-/***************************************************************************
- * int nxt_main *--------------------------------------------------------------------------
- ***************************************************************************/
-
-void device_test(void);
-
-int nxt_main() {
-    sp_init();
-    display_set_auto_update_period(DEFAULT_UPDATE_PERIOD);
-
-    // Run user app
-    device_test();
-
-    display_reset();
-    nxt_motor_reset_all();
-    udp_reset();
-    bt_reset();
-    bt_disable();
-    hs_disable();
-    i2c_disable_all();
-    sound_reset();
-    return 0;
-}
 
 void device_test(void) {
 
@@ -198,34 +164,10 @@ void device_test(void) {
 
 void main(void)
 {
-    /* When we get here:
-    * PLL and flash have been initialised and
-    * interrupts are off, but the AIC has not been initialised.
-    */
-    aic_initialise();
-    sp_init();
-    interrupts_enable();
-    systick_init();
-    sound_init();
-    nxt_avr_init();
-    nxt_motor_init();
-    i2c_init();
-    bt_init();
-    hs_init();
-    udp_init();
-    systick_wait_ms(100); // wait for Sound to stabilize
-    sound_freq(500, 100, 30);
-    systick_wait_ms(1000); // wait for LCD to stabilize
-    display_init();
-    
-    // Repeatedly run "app"
-    nxt_main();
+    nxt_init();
 
-    // Go to update mode if back button pressed. Else turn off.
-    if (buttons_get() == BUTTON_ESCAPE) {
-        shutdown(1);
-    }
-    else {
-        shutdown(0);
-    }
+    // Run user app
+    device_test();
+
+    nxt_deinit();
 }
