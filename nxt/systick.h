@@ -7,6 +7,8 @@ void systick_init(void);
 
 uint32_t systick_get_ms(void);
 
+uint32_t systick_get_us(void);
+
 uint64_t systick_get_ns(void);
 
 void systick_wait_ms(uint32_t ms);

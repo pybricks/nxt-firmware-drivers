@@ -25,7 +25,7 @@ extern const int * forceswitch;
 
 #define LOW_PRIORITY_IRQ 10
 
-static volatile uint32_t systick_ms;
+volatile uint32_t systick_ms;
 
 // Systick low priority
 void
@@ -79,6 +79,24 @@ systick_get_ns(void)
   // get us
   ns = ((piir & AT91C_PITC_CPIV)*1000)/(CLOCK_FREQUENCY/16/1000000);
   return (uint64_t)ms*1000000 + ns;
+}
+
+uint32_t
+systick_get_us(void)
+{
+  uint32_t ms;
+  uint32_t piir;
+  uint32_t us;
+
+  do {
+    ms = systick_ms;
+    piir = *AT91C_PITC_PIIR;
+  } while (systick_ms != ms);
+  // add in any missed ms
+  ms += (piir  >> 20);
+  // get us
+  us = ((piir & AT91C_PITC_CPIV)*1000) / (CLOCK_FREQUENCY/16) * 1000;
+  return ms*1000 + us;
 }
 
 
