@@ -2,8 +2,8 @@
 
 default: all
 
-include environment.mak
-include targetdef.mak
+include environment.mk
+include targetdef.mk
 
 C_OPTIMISATION_FLAGS = -Os
 #C_OPTIMISATION_FLAGS = -Os -Xassembler -aslh
@@ -80,17 +80,6 @@ clean:
 %.o: %.c
 	@echo "### Compiling $< to $@"
 	$(CC) $(CFLAGS) -c -o $@ $< 
-
-
-### special rules for compiling JVM sources
-
-$(VM_PREFIX)%.o: $(VM_DIR)/%.c
-	@echo "### Compiling $< to $@"
-	$(CC) $(CFLAGS) -c -o $@ $< 
-
-$(VM_PREFIX)interpreter.o: $(VM_DIR)/interpreter.c
-	@echo "### Compiling $< to $@"
-	$(CC) $(CFLAGS) -O3 -c -o $@ $< 
 
 
 ### rules for disassembling
