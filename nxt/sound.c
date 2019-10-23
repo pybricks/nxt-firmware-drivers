@@ -1,25 +1,28 @@
 /* leJOS Sound generation
  * The module provides support for audio output. Two modes are supported, tone
- * generation and the playback of PCM based audio samples. Both use pulse 
+ * generation and the playback of PCM based audio samples. Both use pulse
  * density modulation to actually produce the output.
- * To produce a tone a single pdm encoded cycle is created (having the 
+ * To produce a tone a single pdm encoded cycle is created (having the
  * requested amplitude), this single cycle is then played repeatedly to
  * generate the tone. The bit rate used to output the sample defines the
  * frequency of the tone and the number of repeats represents then length.
  * To play an encoded sample (only 8 bit PCM is currently supported), each PCM
  * sample is turned into a 256 bit pdm block, which is then output (at the
  * sample rate), to create the output. Again the amplitude of the samples may
- * be controlled. 
+ * be controlled.
  * The actual output of the bits is performed using the built in Synchronous
  * Serial Controller (SSC). This is capable of outputing a series of bits to
  * port at fixed intervals and is used to output the pdm audio.
  */
+
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "sound.h"
 #include "at91sam7.h"
 #include "aic.h"
 #include "nxt_avr.h"
-#include <string.h>
-#include <stdlib.h>
 #include "display.h"
 #include "systick.h"
 #include "rconsole.h"
@@ -30,9 +33,9 @@
 // value to a 256bit PDM value by using a lookup table. The second uses
 // a second order Sigma-Delta encoder to create a 32bit encoding. The
 // Sigma-Delta encoder uses less memory and produces a slightly better
-// sounding result, but requires approximately 15% of the cpu when 
+// sounding result, but requires approximately 15% of the cpu when
 // playing 8MHz samples. The lookup method requires more memory but only
-// uses approx 4% of the cpu when playing the same clip. 
+// uses approx 4% of the cpu when playing the same clip.
 // The sigma-delta method generates fewer interrupts (due to the smaller
 // sample size), and because of this has more accurate timing (because the
 // clock divisor is larger).
@@ -108,7 +111,7 @@ const uint32_t sample_pattern[33] =
 /* The following tables provide input to the wave generation code. This
  * code takes a set of points describing one half cycle of a symmetric waveform
  * and from this creates a pdm encoded version of a single full cycle of the
- * wave. 
+ * wave.
  *
  * A number of sample wave shapes have been tried, an accurates sine wave, a
  * square wave, triangular wave and a rough approximation of a sine wave.
@@ -122,23 +125,23 @@ const uint32_t sample_pattern[33] =
  * result has to some extent been validated using an audio spectrum analyzer
  * which shows vertually no fundamental below 700Hz but lots of harmonics.
  *
- * The square wave also produces a higher volume than other wave shapes. 
+ * The square wave also produces a higher volume than other wave shapes.
  * Higher volumes can be achieved when using the rough sine wave by allowing
  * the volume setting to push the shape into distortion and effectively
  * becomming a square wave!
  */
-//const byte sine[] =  {0xa8, 0xc0, 0xca, 0xd4, 0xe0, 0xe9, 0xff, 0xff, 0xff, 0xff, 0xe9, 0xe0, 0xd4, 0xca, 0xc0, 0xa8};
-//const byte sine[] =  {0xb0, 0xc0, 0xca, 0xd4, 0xe0, 0xe9, 0xf2, 0xff, 0xff, 0xf2, 0xe9, 0xe0, 0xd4, 0xca, 0xc0, 0xb0};
-//const byte sine[] =  {0xc0, 0xc8, 0xd0, 0xd8, 0xe0, 0xea, 0xf4, 0xff, 0xff, 0xf4, 0xea, 0xe0, 0xd8, 0xd0, 0xc8, 0xc0};
-const byte sine[] =  {0xc0, 0xc8, 0xd0, 0xd8, 0xe0, 0xea, 0xf4, 0xff, 0xff, 0xf0, 0xe5, 0xdc, 0xd4, 0xcc, 0xc4, 0xbc};
-//const byte sine[] =  {0x98, 0xb0, 0xc7, 0xda, 0xea, 0xf6, 0xfd, 0xff, 0xff, 0xfd, 0xf6, 0xea, 0xda, 0xc7, 0xb0, 0x98};
+//const uint8_t sine[] =  {0xa8, 0xc0, 0xca, 0xd4, 0xe0, 0xe9, 0xff, 0xff, 0xff, 0xff, 0xe9, 0xe0, 0xd4, 0xca, 0xc0, 0xa8};
+//const uint8_t sine[] =  {0xb0, 0xc0, 0xca, 0xd4, 0xe0, 0xe9, 0xf2, 0xff, 0xff, 0xf2, 0xe9, 0xe0, 0xd4, 0xca, 0xc0, 0xb0};
+//const uint8_t sine[] =  {0xc0, 0xc8, 0xd0, 0xd8, 0xe0, 0xea, 0xf4, 0xff, 0xff, 0xf4, 0xea, 0xe0, 0xd8, 0xd0, 0xc8, 0xc0};
+const uint8_t sine[] =  {0xc0, 0xc8, 0xd0, 0xd8, 0xe0, 0xea, 0xf4, 0xff, 0xff, 0xf0, 0xe5, 0xdc, 0xd4, 0xcc, 0xc4, 0xbc};
+//const uint8_t sine[] =  {0x98, 0xb0, 0xc7, 0xda, 0xea, 0xf6, 0xfd, 0xff, 0xff, 0xfd, 0xf6, 0xea, 0xda, 0xc7, 0xb0, 0x98};
 // Time required to generate the tone and volume lookup table...
 #define TONE_OVERHEAD 1
 
 // We use a volume law that approximates a log function. The values in the
 // table below have been hand tuned to try and provide a smooth change in
 // the loudness of both tones and samples.
-const byte logvol[] = {0, 8, 24, 40, 56, 80, 104, 128, 162, 196, 255, 255};
+const uint8_t logvol[] = {0, 8, 24, 40, 56, 80, 104, 128, 162, 196, 255, 255};
 
 
 static void sound_interrupt_enable(uint32_t typ)
@@ -172,7 +175,7 @@ void sound_init()
   // Initialise the hardware. We make use of the SSC module.
   sound_interrupt_disable();
   sound_disable();
-  
+
   *AT91C_PMC_PCER = (1 << AT91C_ID_SSC);
 
   *AT91C_PIOA_ODR = AT91C_PA17_TD;
@@ -182,11 +185,11 @@ void sound_init()
   *AT91C_PIOA_IFDR = AT91C_PA17_TD;
   *AT91C_PIOA_CODR = AT91C_PA17_TD;
   *AT91C_PIOA_IDR = AT91C_PA17_TD;
-  
+
   *AT91C_SSC_CR = AT91C_SSC_SWRST;
   *AT91C_SSC_TCMR = AT91C_SSC_CKS_DIV + AT91C_SSC_CKO_CONTINOUS + AT91C_SSC_START_CONTINOUS;
   *AT91C_SSC_TFMR = 31 + (7 << 8) + AT91C_SSC_MSBF; // 8 32-bit words
-  *AT91C_SSC_CR = AT91C_SSC_TXEN;                                        
+  *AT91C_SSC_CR = AT91C_SSC_TXEN;
 
   aic_mask_on(AT91C_ID_SSC);
   aic_clear(AT91C_ID_SSC);
@@ -213,7 +216,7 @@ void sound_reset()
   sample.sample_buf = NULL;
 }
 
-static void create_tone(const byte *lookup, int lulen, uint32_t *pat, int len)
+static void create_tone(const uint8_t *lookup, int lulen, uint32_t *pat, int len)
 {
   // Fill the supplied buffer with len longs representing a pdm encoded
   // wave. We use a pre-generated lookup table for the wave shape.
@@ -232,7 +235,7 @@ static void create_tone(const byte *lookup, int lulen, uint32_t *pat, int len)
   uint32_t bits = 0;
   uint32_t bits2 = 0;
   int entry = 0;
-  
+
   while (i-- > 0)
   {
     int res = lookup[entry++];
@@ -240,7 +243,7 @@ static void create_tone(const byte *lookup, int lulen, uint32_t *pat, int len)
     int j = step;
     while (j-- > 0)
     {
-      // Perform pdm conversion    
+      // Perform pdm conversion
       error = res - out + error;
       error2 = error - out + error2;
       if (error2 > 0)
@@ -289,7 +292,7 @@ static void set_vol(int vol)
     int32_t a = (i*output)/128;
     if (a > 127)
       a = 127;
-    sample.amp[128-i] = -a; 
+    sample.amp[128-i] = -a;
     sample.amp[i+128] = a;
   }
   sample.cur_vol = vol;
@@ -313,7 +316,7 @@ void sound_freq(uint32_t freq, uint32_t ms, int vol)
   // Update the volume lookup table if we need to
   set_vol(vol);
   int buf = sample.buf_id^1;
-  create_tone(sine, sizeof(sine), sample.buf[buf], len); 
+  create_tone(sine, sizeof(sine), sample.buf[buf], len);
   // The note gneration takes approx 1ms, to ensure that we do not get gaps
   // when playing a series of tones we extend the requested period to cover
   // this 1ms cost.
@@ -464,7 +467,7 @@ int sound_add_sample(uint8_t *data, uint32_t length, uint32_t freq, int vol)
 {
   // Add a set of samples into the playback queue, if not currently
   // playing start the playback process.
-  
+
   // If this is the first sample simply start to play it
   if (sound_mode != SOUND_MODE_PCM || sample.ptr != sample.sample_buf)
   {
@@ -495,7 +498,7 @@ int sound_add_sample(uint8_t *data, uint32_t length, uint32_t freq, int vol)
   }
   sample.in_index = in;
   sample.count = (((in - out) & (SAMPLEBUFSZ - 1)) + SAMPPERBUF - 1)/SAMPPERBUF;
-   
+
   // re-enable and wait for the current sample to complete
   sound_interrupt_enable(AT91C_SSC_ENDTX);
   *AT91C_SSC_PTCR = AT91C_PDC_TXTEN;

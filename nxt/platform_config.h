@@ -1,15 +1,6 @@
 #ifndef _PLATFORM_CONFIG_H
 #define _PLATFORM_CONFIG_H
 
-// Basic types
-
-typedef unsigned char byte;
-typedef signed char JBYTE;
-typedef signed short JSHORT;
-typedef signed long JINT;
-typedef unsigned short TWOBYTES;
-typedef unsigned long FOURBYTES;
-
 #include "systick.h"
 
 // Converting words to pointers

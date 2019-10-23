@@ -1,5 +1,8 @@
 #ifndef __DISPLAY_H__
 #define __DISPLAY_H__
+
+#include <stdint.h>
+
 #include "platform_config.h"
 
 void display_init(void);
@@ -24,7 +27,7 @@ void display_hex(uint32_t val, uint32_t places);
 void display_unsigned(uint32_t val, uint32_t places);
 
 void display_bitmap_copy(const uint8_t *data, uint32_t width, uint32_t depth, uint32_t x, uint32_t y);
-void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw, int dh, int dx, int dy, int w, int h, int rop);
+void display_bitblt(uint8_t *src, int sw, int sh, int sx, int sy, uint8_t *dst, int dw, int dh, int dx, int dy, int w, int h, int rop);
 void display_test(void);
 
 uint8_t *display_get_buffer(void);

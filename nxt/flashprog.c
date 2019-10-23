@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "flashprog.h"
 #include "interrupts.h"
 #include "twi.h"
@@ -22,7 +24,7 @@ static int wait_twi_complete()
   } while (systick_get_ms() < timeout);
   return status;
 }
-    
+
 /**
  * Write a page from the supplied flash buffer to flash memory
  * The flash buffer must have been obtained through a call to
@@ -35,7 +37,7 @@ static int wait_twi_complete()
  * -4 bad flash buffer
  */
 int
-flash_write_page_buffer(FOURBYTES *page, int page_num)
+flash_write_page_buffer(uint32_t *page, int page_num)
 {
   /* Write page to flash memory.
    * This function must run out of ram and while it executes no other code
@@ -57,13 +59,13 @@ flash_write_page_buffer(FOURBYTES *page, int page_num)
 
   // Turn off timer tick call backs
   systick_suspend();
-   	
+
   // Wait until next tick
   systick_wait_ms(1);
- 
+
   // Force a tick to talk to the avr
   nxt_avr_1kHz_update();
- 
+
   // Wait for it to complete
   status = wait_twi_complete();
   if (status != 0) return -1;
@@ -72,7 +74,7 @@ flash_write_page_buffer(FOURBYTES *page, int page_num)
 
   // Write the buffer to the selected page
   status = flash_write(page_num + flash_start_page);
-  
+
   // Turn ints back on
   if (istate) interrupts_enable();
   // Ensure that we are back in-sync.
@@ -94,7 +96,7 @@ flash_get_page_buffer(int page)
   if (page + flash_start_page >= FLASH_MAX_PAGES) return NULL;
   return (uint32_t *) (FLASH_BASE + page*FLASH_PAGE_SIZE);
 }
-  
+
 
 /**
  * Write a page from a memory buffer to flash memory
@@ -105,10 +107,10 @@ flash_get_page_buffer(int page)
  * -3 Bad page number
  */
 int
-flash_write_page(FOURBYTES *page, int page_num)
+flash_write_page(uint32_t *page, int page_num)
 {
   int i;
-  FOURBYTES *buf = flash_get_page_buffer(page_num);
+  uint32_t *buf = flash_get_page_buffer(page_num);
   if (buf == NULL) return -3;
   // Write the data to the flash buffer
   for (i = 0; i < FLASH_PAGE_SIZE; i++)
@@ -123,7 +125,7 @@ flash_write_page(FOURBYTES *page, int page_num)
  * -3 Bad page number
  */
 int
-flash_read_page(FOURBYTES *page, int page_num)
+flash_read_page(uint32_t *page, int page_num)
 {
   int i;
   if (page_num + flash_start_page >= FLASH_MAX_PAGES) return -3;

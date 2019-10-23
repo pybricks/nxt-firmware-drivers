@@ -1,9 +1,11 @@
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "display.h"
 #include "nxt_lcd.h"
 #include "systick.h"
-#include <stdlib.h>
 #include "nxt_spi.h"
-#include <string.h>
 
 typedef unsigned int uint;
 
@@ -293,7 +295,7 @@ int display_get_update_complete_time()
 {
   return display_update_complete_time;
 }
-  
+
 
 void display_force_update(void)
 {
@@ -393,7 +395,7 @@ display_hex(uint32_t val, uint32_t places)
 static void
 display_unsigned_worker(uint32_t val, uint32_t places, uint32_t sign)
 {
-  char x[12];			// enough for 10 digits + sign + NULL 
+  char x[12];			// enough for 10 digits + sign + NULL
   char *p = &x[11];
   int p_count = 0;
   uint32_t val0;
@@ -447,14 +449,14 @@ display_int(int val, uint32_t places)
 void
 display_bitmap_copy(const uint8_t *data, uint32_t width, uint32_t depth, uint32_t x, uint32_t y)
 {
-  display_bitblt((byte *)data, width, depth*8, 0, 0, (byte *)display_buffer, DISPLAY_WIDTH, DISPLAY_DEPTH*8, x, y*8, width, depth*8, 0x0000ff00); 
+  display_bitblt((uint8_t *)data, width, depth*8, 0, 0, (uint8_t *)display_buffer, DISPLAY_WIDTH, DISPLAY_DEPTH*8, x, y*8, width, depth*8, 0x0000ff00);
 }
 
-void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw, int dh, int dx, int dy, int w, int h, int rop)
+void display_bitblt(uint8_t *src, int sw, int sh, int sx, int sy, uint8_t *dst, int dw, int dh, int dx, int dy, int w, int h, int rop)
 {
   /* This is a partial implementation of the BitBlt algorithm. It provides a
    * complete set of raster operations and handles partial and fully aligned
-   * images correctly. Overlapping source and destination images is also 
+   * images correctly. Overlapping source and destination images is also
    * supported. It does not performing mirroring. The code was converted
    * from an initial Java implementation and has not been optimized for C.
    * The genral mechanism is to perform the block copy with Y as the inner
@@ -489,7 +491,7 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
   // Setup initial parameters and check for overlapping copy
   int xinc = 1;
   int yinc = 1;
-  byte firstBit = 1;
+  uint8_t firstBit = 1;
   if (src == dst)
   {
     // If copy overlaps we use reverse direction
@@ -497,7 +499,7 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
     {
       sy = sy + h - 1;
       dy = dy + h - 1;
-      firstBit = (byte)0x80;
+      firstBit = (uint8_t)0x80;
       yinc = -1;
     }
     if (dx > sx)
@@ -509,15 +511,15 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
   }
   int inStart = (sy/8)*sw;
   int outStart = (dy/8)*dw;
-  byte inStartBit = (byte)(1 << (sy & 0x7));
-  byte outStartBit = (byte)(1 << (dy & 0x7));
+  uint8_t inStartBit = (uint8_t)(1 << (sy & 0x7));
+  uint8_t outStartBit = (uint8_t)(1 << (dy & 0x7));
   dw *= yinc;
   sw *= yinc;
   // Extract rop sub-fields
-  byte ca1 = (byte)(rop >> 24);
-  byte cx1 = (byte)(rop >> 16);
-  byte ca2 = (byte)(rop >> 8);
-  byte cx2 = (byte) rop;
+  uint8_t ca1 = (uint8_t)(rop >> 24);
+  uint8_t cx1 = (uint8_t)(rop >> 16);
+  uint8_t ca2 = (uint8_t)(rop >> 8);
+  uint8_t cx2 = (uint8_t) rop;
   unsigned char noDst = (ca1 == 0 && cx1 == 0);
   int xcnt;
   // Check for byte aligned case and optimise for it
@@ -535,11 +537,11 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
       while(cnt-- > 0)
       {
         if (noDst)
-          dst[outIndex] = (byte)((src[inIndex] & ca2)^cx2);            
+          dst[outIndex] = (uint8_t)((src[inIndex] & ca2)^cx2);
         else
         {
-          byte inVal = src[inIndex];
-          dst[outIndex] = (byte)((dst[outIndex] & ((inVal & ca1)^cx1)) ^ ((inVal & ca2)^cx2));
+          uint8_t inVal = src[inIndex];
+          dst[outIndex] = (uint8_t)((dst[outIndex] & ((inVal & ca1)^cx1)) ^ ((inVal & ca2)^cx2));
         }
         outIndex += dw;
         inIndex += sw;
@@ -560,13 +562,13 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
   while(xcnt-- > 0)
   {
     int inIndex = inStart + ix;
-    byte inBit = inStartBit;
-    byte inVal = src[inIndex];
-    byte inAnd = (byte)((inVal & ca1)^cx1);
-    byte inXor = (byte)((inVal & ca2)^cx2);
+    uint8_t inBit = inStartBit;
+    uint8_t inVal = src[inIndex];
+    uint8_t inAnd = (uint8_t)((inVal & ca1)^cx1);
+    uint8_t inXor = (uint8_t)((inVal & ca2)^cx2);
     int outIndex = outStart + ox;
-    byte outBit = outStartBit;
-    byte outPixels = dst[outIndex];
+    uint8_t outBit = outStartBit;
+    uint8_t outPixels = dst[outIndex];
     int cnt = h;
     while(1)
     {
@@ -579,8 +581,8 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
       }
       else
       {
-        byte resBit = (byte)((outPixels & ((inAnd & inBit) != 0 ? outBit : 0))^((inXor & inBit) != 0 ? outBit : 0));
-        outPixels = (byte)((outPixels & ~outBit) | resBit);
+        uint8_t resBit = (uint8_t)((outPixels & ((inAnd & inBit) != 0 ? outBit : 0))^((inXor & inBit) != 0 ? outBit : 0));
+        outPixels = (uint8_t)((outPixels & ~outBit) | resBit);
       }
       if (--cnt <= 0) break;
       if (yinc > 0)
@@ -598,8 +600,8 @@ void display_bitblt(byte *src, int sw, int sh, int sx, int sy, byte *dst, int dw
         inBit = firstBit;
         inIndex += sw;
         inVal = src[inIndex];
-        inAnd = (byte)((inVal & ca1)^cx1);
-        inXor = (byte)((inVal & ca2)^cx2);
+        inAnd = (uint8_t)((inVal & ca1)^cx1);
+        inXor = (uint8_t)((inVal & ca2)^cx2);
       }
       if (outBit == 0)
       {
