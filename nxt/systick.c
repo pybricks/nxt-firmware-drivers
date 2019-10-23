@@ -42,7 +42,7 @@ systick_isr_C(void)
 {
   uint32_t status;
 
-  // Read status to confirm interrupt 
+  // Read status to confirm interrupt
   status = *AT91C_PITC_PIVR;
   // Update with number of ticks since last time
   systick_ms += (status & AT91C_PITC_PICNT) >> 20;
@@ -76,7 +76,7 @@ systick_get_ns(void)
   } while (systick_ms != ms);
   // add in any missed ms
   ms += (piir  >> 20);
-  // get us
+  // get ns
   ns = ((piir & AT91C_PITC_CPIV)*1000)/(CLOCK_FREQUENCY/16/1000000);
   return (uint64_t)ms*1000000 + ns;
 }
@@ -95,7 +95,7 @@ systick_get_us(void)
   // add in any missed ms
   ms += (piir  >> 20);
   // get us
-  us = ((piir & AT91C_PITC_CPIV)*1000) / (CLOCK_FREQUENCY/16) * 1000;
+  us = (piir & AT91C_PITC_CPIV) / (CLOCK_FREQUENCY/16/1000000);
   return ms*1000 + us;
 }
 
