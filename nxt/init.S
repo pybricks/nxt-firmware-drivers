@@ -70,25 +70,6 @@ start:
 	@ and allows us to access registers from 0xFFFFF004 upwards.
 	mov     r0, #0
 
-@
-@ Do the remapping, if required, so that RAM is at address 0.
-@
-@ We read what is at address 0, invert it, and write it to 2MB.
-@ If the value at address 0 has changed to the inverted value, then
-@ there's no need to remap.
-@
-memory_remap:
-	orr     r1, r0, #AT91C_ISRAM
-	ldr     r2, [r0]
-	mvn     r3, r2
-	str     r3, [r1]
-	ldr     r2, [r0]
-
-	cmp     r2, r3
-	movne   r1, #AT91C_MC_RCB
-	strne   r1, [r0, #AT91C_MC_RCR]
-
-
 @   MC_FMR:
 @   Set up flash memory accessing and memory for 48 MHz FMCN = 50)
 @   2 wait states (FWS = 1)
@@ -100,7 +81,7 @@ setup_flash:
 
 @
 @    Disable watchdog
-@    Set MDT_MR disable bit. 
+@    Set MDT_MR disable bit.
 @    Note: probably want to set this differently at some stage...
 @
 disable_watchdog:
