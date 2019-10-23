@@ -1,6 +1,16 @@
 #include "at91sam7.h"
 #include "asmtools.h"
 
+@ Tests if interrupts are enabled
+@ Returns zero if interupts are disabled, otherwise one
+global_arm_func_section interrupts_get
+	mrs     r0, cpsr
+	tst     r0, #CPSR_NOIRQ
+	movne   r0, #0
+	bxne    lr
+	mov     r0, #1
+	bx      lr
+
 @ Disables interrupts.
 @ Returns zero if interupts were previously off
 global_arm_func_section interrupts_get_and_disable
