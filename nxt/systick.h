@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+typedef void(*systick_hook_t)(void);
+
+void systick_set_hook(systick_hook_t hook);
+
 void systick_init(void);
 
 uint32_t systick_get_ms(void);

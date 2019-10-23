@@ -25,7 +25,12 @@ extern const int * forceswitch;
 
 #define LOW_PRIORITY_IRQ 10
 
-volatile uint32_t systick_ms;
+static volatile uint32_t systick_ms;
+static systick_hook_t systick_hook;
+
+void systick_set_hook(systick_hook_t hook) {
+    systick_hook = hook;
+}
 
 // Systick low priority
 void
@@ -34,6 +39,9 @@ systick_low_priority_C(void)
   *AT91C_AIC_ICCR = (1 << LOW_PRIORITY_IRQ);
   nxt_avr_1kHz_update();
   nxt_motor_1kHz_process();
+  if (systick_hook) {
+      systick_hook();
+  }
 }
 
 // Called at 1000Hz
