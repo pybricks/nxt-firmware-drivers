@@ -1,6 +1,9 @@
 #ifndef _SENSORS_H
-#include "at91sam7s256.h"
 #define _SENSORS_H
+
+#include <stdint.h>
+
+#include "at91sam7s256.h"
 
 #define N_SENSORS (4)
 #define RS485_PORT (3)

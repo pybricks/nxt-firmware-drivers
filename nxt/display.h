@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "platform_config.h"
-
 void display_init(void);
 
 void display_reset(void);

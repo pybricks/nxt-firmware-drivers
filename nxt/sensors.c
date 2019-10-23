@@ -1,7 +1,7 @@
 /**
  * NXT Sensor port interface
  * The NXT sensor port is complex it has 3 active pins plus two ground
- * pins and a 5v supply. One of the pins (ana) is accessed via the AVR and 
+ * pins and a 5v supply. One of the pins (ana) is accessed via the AVR and
  * has the following operating modes:
  * 9v Constant power
  * 9v pulsed power (3ms on 0.1ms off)
@@ -12,7 +12,6 @@
  * Pin digi1 can be used either as a digital I/O pin (via set/get) or as an
  * addional analogue input pin (via read).
  */
-#include "platform_config.h"
 
 #include "at91sam7.h"
 #include "sensors.h"
@@ -106,7 +105,7 @@ sp_check_event(int filter)
     }
   return changed;
 }
-        
+
 
 void sp_set_mode(int port, int pin, int mode)
 {

@@ -266,7 +266,7 @@ uint32_t display_auto_update_period = DEFAULT_UPDATE_PERIOD;
 void
 display_update(void)
 {
-  uint32_t now = get_sys_time();
+  uint32_t now = systick_get_ms();
   if (display_auto_update_period > 0)
     display_update_time = now + display_auto_update_period;
   nxt_lcd_update();

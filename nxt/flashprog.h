@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-#include "platform_config.h"
 #include "init.h"
 
 int flash_write_page(uint32_t *buf, int page_num);
